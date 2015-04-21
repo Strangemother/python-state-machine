@@ -1,0 +1,20 @@
+Installing discodb:
+
+
+http://discodb.readthedocs.org/en/latest/#module-discodb
+
+	from discodb import DiscoDB, Q
+
+	data = {'mammals': ['cow', 'dog', 'cat', 'whale'],
+	        'pets': ['dog', 'cat', 'goldfish'],
+	        'aquatic': ['goldfish', 'whale']}
+
+	db = DiscoDB(data) # create an immutable discodb object
+
+	print list(db.keys()) # => mammals, aquatic, pets
+	print list(db['pets']) # => dog, cat, goldfish
+	print list(db.query(Q.parse('mammals & aquatic'))) # => whale
+	print list(db.query(Q.parse('pets & ~aquatic'))) # => dog, cat
+	print list(db.query(Q.parse('pets | aquatic'))) # => dog, cat, whale, goldfish
+
+	db.dump(file('animals.db', 'w')) # dump discodb to a file
