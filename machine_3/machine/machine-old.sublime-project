@@ -1,0 +1,13 @@
+{
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"machine_3",
+				"env"
+			],
+			"path": "C:\\Users\\jay\\Documents\\GitHub\\python-state-machine"
+		}
+	]
+}

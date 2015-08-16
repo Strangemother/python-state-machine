@@ -1,0 +1,704 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"file",
+				"filezilla"
+			],
+			[
+				"base",
+				"basedir	(filesystem.py)"
+			],
+			[
+				"virut",
+				"VirtualDrive"
+			],
+			[
+				"listr",
+				"listen_port	(ftp.py)"
+			],
+			[
+				"TEST",
+				"TEST_ROOT"
+			],
+			[
+				"exi",
+				"exists"
+			],
+			[
+				"Thre",
+				"ThreadFTP"
+			],
+			[
+				"assert",
+				"assertEqual"
+			],
+			[
+				"Thr",
+				"ThreadFTP"
+			],
+			[
+				"loc",
+				"localhost	(test_filesystem.py)"
+			],
+			[
+				"asser",
+				"assertEqual"
+			],
+			[
+				"listen_",
+				"listen_ip"
+			],
+			[
+				"list",
+				"listen_ip"
+			],
+			[
+				"excep",
+				"exception	(filesystems.py)"
+			],
+			[
+				"get_",
+				"get_address"
+			],
+			[
+				"assetr",
+				"assertTrue	(test_ftp.py)"
+			],
+			[
+				"key",
+				"key_generator"
+			],
+			[
+				"sef",
+				"self	(server.py)"
+			],
+			[
+				"tes",
+				"test	(ftp.py)"
+			],
+			[
+				"getc",
+				"getcwdu	(test_filesystem.py)"
+			],
+			[
+				"list_",
+				"listen_ip	(ftp.py)"
+			],
+			[
+				"setup",
+				"setup_handler"
+			],
+			[
+				"User",
+				"UserFS"
+			],
+			[
+				"confi",
+				"config"
+			],
+			[
+				"make_",
+				"make_handler"
+			],
+			[
+				"files",
+				"filesystem	(ftp.py)"
+			],
+			[
+				"ass",
+				"assertEqual"
+			],
+			[
+				"hNDLE",
+				"handler"
+			],
+			[
+				"config",
+				"config_path"
+			],
+			[
+				"re",
+				"receive"
+			],
+			[
+				"writ",
+				"write_throttle	(ftp.py)"
+			],
+			[
+				"write",
+				"write_limit	(ftp.py)"
+			],
+			[
+				"asse",
+				"assertEqual"
+			],
+			[
+				"pd",
+				"pdb	(PythonBreakpoints.sublime-settings)"
+			],
+			[
+				"mak",
+				"make_handler"
+			],
+			[
+				"mk",
+				"make_server"
+			],
+			[
+				"get",
+				"get_settings"
+			],
+			[
+				"listen",
+				"listen_ip	(config.json)"
+			],
+			[
+				"Mod",
+				"Modifier"
+			],
+			[
+				"mod",
+				"modifiers"
+			],
+			[
+				"va",
+				"value"
+			],
+			[
+				"_pl",
+				"_plugins"
+			],
+			[
+				"mo",
+				"modifier"
+			],
+			[
+				"ar",
+				"args"
+			],
+			[
+				"app",
+				"apply"
+			],
+			[
+				"cons",
+				"constructor"
+			],
+			[
+				"Klass",
+				"_Klass"
+			],
+			[
+				"Mo",
+				"Modifier"
+			],
+			[
+				"Modi",
+				"ModifierMixin"
+			],
+			[
+				"remov",
+				"removeGlobal"
+			],
+			[
+				"M",
+				"ModifierMixin"
+			],
+			[
+				"Cott",
+				"cotton"
+			],
+			[
+				"fill",
+				"fillStyle"
+			],
+			[
+				"end",
+				"endAngle"
+			],
+			[
+				"start",
+				"startAngle"
+			],
+			[
+				"arr",
+				"array"
+			],
+			[
+				"build",
+				"buildCache"
+			],
+			[
+				"with",
+				"width"
+			],
+			[
+				"rea",
+				"relative"
+			],
+			[
+				"cal",
+				"calcWidth"
+			],
+			[
+				"insp",
+				"inspectCanvas"
+			],
+			[
+				"del",
+				"delx"
+			],
+			[
+				"py",
+				"proxy_set"
+			],
+			[
+				"if",
+				"ifmain	if __name__ == '__main__'"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 300.0,
+		"last_filter": "cancel",
+		"selected_items":
+		[
+			[
+				"cancel",
+				"SFTP: Cancel Upload"
+			],
+			[
+				"renam",
+				"File: Rename"
+			],
+			[
+				"canc",
+				"SFTP: Cancel Upload"
+			],
+			[
+				"removep",
+				"Package Control: Remove Package"
+			],
+			[
+				"flake",
+				"User: Jump to next Flake8 Lint error"
+			],
+			[
+				"flak",
+				"User: Python Flake8 Lint"
+			],
+			[
+				"python",
+				"Set Syntax: Python"
+			],
+			[
+				"lint",
+				"User: Python Flake8 Lint"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"SFTP: Browse Remote…"
+			],
+			[
+				"rename",
+				"File: Rename"
+			],
+			[
+				"upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"rena",
+				"File: Rename"
+			],
+			[
+				"Rename",
+				"File: Rename"
+			],
+			[
+				"ren",
+				"File: Rename"
+			],
+			[
+				"mult",
+				"Set Syntax: MultiMarkdown"
+			],
+			[
+				"instl",
+				"Package Control: Install Package"
+			],
+			[
+				"spac",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"spaces",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"pyt",
+				"Set Syntax: Python"
+			]
+		],
+		"width": 408.0
+	},
+	"console":
+	{
+		"height": 452.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/jay/Documents/GitHub/python-state-machine"
+	],
+	"file_history":
+	[
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/machine/machine.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/tools/daemon.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/examples/simple.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine/core/conditions.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/node/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/__main__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/tools/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/machine/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/usage/runner.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/compares/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/usage/machine/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_3/examples/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/sftp-config.json",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/machine.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/node.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/conditions.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/compares/base.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/compares/simple.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/__init__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/core/base.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/tests/test_conditions.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/tests/test_compare.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/tests/test_basic.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine_2/usage/__main__.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/docs/book/README.md",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/config.json",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/filesystem.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/tests/test_filesystem.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/ftp.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/lib/filesystems.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/server.py",
+		"/C/Users/jay/Downloads/JP Morgan/data/data/json/sales.json",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/docs/server.md",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/authorizers.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/tests/test_ftp.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/client/notes",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/utils.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/tests/test_utils.py",
+		"/C/Users/jay/AppData/Roaming/Sublime Text 3/Packages/Python Breakpoints/PythonBreakpoints.sublime-settings",
+		"/C/Users/jay/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/jay/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/jay/Documents/GitHub/ftp/.gitignore",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/requirements.txt",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/libsodium/libsodium-1.0.3/Makefile",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/libsodium/libsodium-1.0.3/build-aux/compile",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/udp.py",
+		"/C/Program Files/Everything/Everything.ini",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/libsodium/Sodium.dll.config",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/run.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/__init__.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/autoreload.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/utils.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/sockets.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/usage.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/server.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/basic_server.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/server/pocketsocket/Readme.md",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/sockets.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/autoreload.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/Readme.md",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/basic_server.py",
+		"/C/Users/jay/Documents/GitHub/ftp/src/python/tests/__init__.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/server.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/usage.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.531/pocketsocket-master/utils.py",
+		"/C/Users/jay/Documents/GitHub/ftp/sftp-config.json",
+		"/C/Users/jay/Documents/GitHub/ftp/foo",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/tileblocks/flatpieces/flat/flat3.csv",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/tileblocks/flatpieces/rail/railend.csv",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/fontdata.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/gamedata.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/levelspotsettings.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/tricksdata.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/spritesheetpatch.json",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/tutlevelsettings.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/levels/neon/neontokyo2entities.lvl",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/config.txt",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/blocksettings.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/animationdata.ini",
+		"/C/Program Files (x86)/Steam/steamapps/common/OlliOlli/gamedata/pak0/settings/backgroundsettings.ini",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/Layer.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/objects/Pie.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/objects/NullPoint.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/objects/Point.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/duck/mouse.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/Modifiers.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-pie.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/duck/pie.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/DisplayObject.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck.Duck.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-mouse.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/cotton.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/duck.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/Surface.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/cotton/components/cotton.canvas.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/objects/Line.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-chain.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-circle.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/duck/line.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/duck/chain.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/Canvas.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/Clock.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/base.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/duck/point.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-line.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/duck-point.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/pages/layers.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/js/canvas-draw.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/example.html",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/SimpleJinjaServer.py",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/css/style.css",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/src/duck/duck/surface.js",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/SimpleJinjaServer.py",
+		"/C/Users/jay/Documents/GitHub/CottonDuck/demo/working/base.html",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/scratch/scratch.py",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/machine/core/nodes.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.112/distributedPythonCode/jobDistributor.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.995/distributedPythonCode/testSubmitMaster.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.491/distributedPythonCode/submitMaster.py",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.022/distributedPythonCode/testScript",
+		"/F/Users/jay/Documents/state-machine/docs/README.md",
+		"/F/Users/jay/Documents/state-machine/docs/Explination.md",
+		"/C/Users/jay/AppData/Local/Temp/Rar$DRa0.288/distributedPythonCode/README.txt",
+		"/F/Users/jay/Documents/state-machine/docs/senario.md",
+		"/F/st/entry/entry/packed.js",
+		"/C/Users/jay/Documents/GitHub/python-state-machine/scratch/conditions.md"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 104.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"args",
+			"c.",
+			"Server",
+			"server",
+			"close_all",
+			"make_server",
+			"shutdown()",
+			"shutdown",
+			"make_server",
+			"make_handler",
+			"self",
+			",",
+			"FTPHandler",
+			"c = get_settings('config.json')",
+			"TESTFN",
+			"set_jail",
+			"trim",
+			"whitespa",
+			"spaces",
+			"()",
+			",",
+			"from pyftpdlib.authorizers import DummyAuthorizer\nimport unittest\nfrom server.ftp import get_settings, make_server, make_handler, \\\n    make_authorizer, make_throttle\nfrom server.server import AppFTPHandler\nfrom pyftpdlib.handlers import FTPHandler, ThrottledDTPHandler\nfrom pyftpdlib.servers import FTPServer\n\n\nclass TestFTPMethods(unittest.TestCase):\n\n    def test_get_settings(self):\n        c = get_settings('config.json')\n        self.assertIsNotNone(c)\n        self.assertEqual(c.version, \"0.1\")\n\n    def test_make_server(self):\n        c = get_settings('config.json')\n        h = make_handler(c)\n        address = (c.listen_ip, c.listen_port)\n        server = make_server(address, h, c)\n        self.assertIsInstance(server, FTPServer)\n        self.assertEqual(server.address, address)\n\n    def test_make_authorizer(self):\n        c = get_settings('config.json')\n        a = make_authorizer(c)\n        self.assertTrue(a.has_user(c.user))\n        self.assertIsInstance(a, DummyAuthorizer)\n\n    def test_make_trottle(self):\n        c = get_settings('config.json')\n        t = make_throttle(c)\n        self.assertEqual(t.write_limit, c.write_throttle)\n        self.assertEqual(t.read_limit, c.read_throttle)\n        self.assertEqual(t, ThrottledDTPHandler)\n\n    def test_make_handler(self):\n        c = get_settings('config.json')\n        h = make_handler(c)\n        self.assertEqual(h, FTPHandler)\n        h = make_handler(c, AppFTPHandler)\n        self.assertEqual(h, AppFTPHandler)\n\nif __name__ == '__main__':\n    unittest.main()\n",
+			"make_authorizer",
+			"c[",
+			"config[",
+			"pass",
+			"rottle\":",
+			"x",
+			"plugin.",
+			"inspection =",
+			"[0]",
+			"= ",
+			", ",
+			"Point",
+			"i",
+			"2",
+			"1",
+			"cache",
+			"src/duck/duck/",
+			"new o.NullPoint",
+			" class",
+			"'>",
+			"=\"../",
+			"div",
+			"=\"/",
+			"../src/",
+			"../src",
+			"self",
+			"get"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 133.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 197.0
+	},
+	"pinned_build_system": "",
+	"project": "machine-old.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\jay\\Documents\\state-machine.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 278.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 3
+	}
+}
