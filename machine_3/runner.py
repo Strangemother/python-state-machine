@@ -1,28 +1,3 @@
-from machine import Machine
-from node import Node
-from conditions import Condition
-
-
-class TestNode(Node):
-    color = 'red'
-    age = 22
-    food = 'cherry'
-    bar = 2
-
-
-class TestReactNode(Node):
-
-    def testnode_age(self, node, value, field):
-        print self.get_name(), 'A condition has been met.'
-        print 'Condition', node, field, value
-
-    def conditions(self):
-        from conditions import Condition
-
-        return (
-            Condition('TestNode', 'age', 3, self.testnode_age),
-        )
-
 
 class Runner(object):
 
@@ -36,20 +11,42 @@ class Runner(object):
         self._ran = True
         return True
 
+    def help(self):
+        print 'Run the state machine: python machine [command]'
+        keys = dir(self.__class__)
+        pkeys = [x if x.startswith('__') is False else None for x in keys]
+        ks =  filter(None, pkeys)
+        for x in ks:
+            print '{0}'.format(x)
 
     def hello(self):
+
         s = 'Hello?.. Are you there?.. Can you hear me?..'
         return s
 
+    def car(self):
+        from examples.car import run
+        print 'running car'
+        run()
+
+    def chain(self):
+        from examples.chain import run
+        print 'running chain'
+        run()
+
+
+    def direction(self):
+        from examples.direction import run
+        print 'running direction'
+        run()
+
+    def simple(self):
+        from examples.simple import run
+        print 'running simple'
+        return run()
+
     def machine(self):
-        print 'machine example'
-        ma = Machine('example')
-        n = TestNode()
-        n2 = TestReactNode()
-        ma.add(n)
-        ma.add(n2)
-        print 'change age on first node'
-        n.age = 3
-        print 'done'
+        from examples.basic import run
+        return run()
 
         return ma
