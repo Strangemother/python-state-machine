@@ -79,6 +79,14 @@ class CacheMixin(object):
 
 class Compare(object):
 
+    @staticmethod
+    def args(node, value, field, const):
+        '''
+        return arguments to fit, condition.compare method
+        '''
+        res = [node, value, getattr(node, field), const]
+        return res
+
     def __init__(self, condition=None):
         self.condition = condition
 
