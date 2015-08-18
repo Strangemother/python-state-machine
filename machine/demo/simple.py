@@ -14,7 +14,7 @@ class LivingRoom(Node):
 
     def get_conditions(self):
         return [
-            C('Lightbulb', 'installed', False)
+            C('Lightbulb', 'installed', False),
         ]
 
 
