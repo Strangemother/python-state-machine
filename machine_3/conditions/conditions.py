@@ -2,16 +2,16 @@
 A condition
 '''
 from base import Base
-from compares import const
+from compares.const import Const as const
 
 
-class ComparisonMixin(object):
+class ComparisonMixin(const):
     '''
     Compare two values with a comparison utility
     to denote if a change has validated.
     '''
 
-    def compare(self, a, b, ctype=None):
+    def compare(self, node, a, b, ctype=None):
         '''
         compare 'a' against 'b' for a comparison of `ctype`
         by defauly ctype will compare for an exact match
@@ -20,7 +20,7 @@ class ComparisonMixin(object):
         if ctype is None:
             ctype = const.EXACT
         # internal importer for core.compares.simple.
-        Comp = self.get_comparison_class(ctype)
+        Comp = self.get_comparison_class(ctype[1])
         # new class of
         comp = Comp(self)
         # perform comparison
@@ -60,7 +60,7 @@ class Condition(ComparisonMixin):
         self.target = value
         self._valid_cb = valid
 
-    def validate(self, node, value, field):
+    def validate(self, parent_node, node, value, field):
         '''
         Validate the condition against a node and it's value.
         The self.watch should match the node, self.field matches
@@ -72,19 +72,42 @@ class Condition(ComparisonMixin):
         # Checking from the node early, the value will
         # not be set yet
         # v = getattr(node, self.field)
-        print 'check', value, self.target
-        match = node.get_name() == self.watch and \
-                field == self.field and \
-                value == self.target
+        # print 'Condition validate', value, self.target
+        #match = node.get_name() == self.watch and \
+        #        field == self.field and \
+        #        value == self.target
 
-        if match:
-            c = self.compare(value, self.target)
-            if c is True and self._valid_cb:
-                self._valid_cb(node, value, field)
-            return True
-
+        # if match:
+        if isinstance(self.target, (tuple,)):
+            klass = self.get_comparison_class(self.target[1])
+            args = klass.args(node, value, field, self.target)
+            c = self.compare(*args)
+        else:
+            c = self.compare(node, value, self.target)
+        if c is True and self._valid_cb:
+            self._call_handler(parent_node, node, value, field)
+            return c
         return False
 
+    def _call_handler(self, parent_node, node, value, field):
+        v = self._valid_cb
+        cb = v
+        if isinstance(v, (str, unicode,)):
+            cb = getattr(parent_node, v)
+        cb(node, value, field)
+
     def __str__(self):
-        s = '{0}_{1}_{2}'.format(self.watch, self.field, self.target)
+        t = self.target
+
+        if isinstance(t, (list, tuple)):
+            t = hash(self.target)
+
+        s = '{0}_{1}_{2}'.format(self.watch, self.field, t)
         return s
+
+    def __unicode__(self):
+        return u'%s' % self.__str__()
+
+    def __repr__(self):
+        s = self.__str__()
+        return '<Condition: %s>' % (s,)
