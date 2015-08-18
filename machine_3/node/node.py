@@ -15,11 +15,14 @@ class Conditions(object):
     '''
     A Mixin construct to assist in applying and managing conditions.
     '''
+    _conditions = ()
 
     def conditions(self):
         '''
         Returns a list of conditions to meet.
         '''
+        if hasattr(self, '_conditions'):
+            return self.get('_conditions')
         return ()
 
 
@@ -62,6 +65,10 @@ class GetSetMixin(object):
             v = self.__dict__[k]
             return v
         # self.fetch_get(k)
+        try:
+            return object.__getattribute__(self, k)
+        except AttributeError as e:
+            pass
         return None
 
     def set(self, k, v):
@@ -184,6 +191,7 @@ class Node(NodeBase):
         # super(Node, self).set(name, value)
 
     def __getattr__(self, name):
+        print '__getattr__', name
         v = self.get(name)
         # print 'Node get:', name, v
         return v
