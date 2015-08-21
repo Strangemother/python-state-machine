@@ -1,8 +1,24 @@
 import unittest
 from mock import Mock
-from ..runner import Runner, TestNode, TestReactNode
-from ..machine import Machine
+
+from ..machine import NodeMixin, Machine, NodeManager
+from ..runner import Runner
+from ..examples.basic import TestNode, TestReactNode
 from ..node import Node
+
+from ..machine.managers import ConditionsManager
+from ..conditions import Condition
+
+
+
+class ConditionsTest(unittest.TestCase):
+
+    def test_condition_names(self):
+        cds = ConditionsManager()
+        c= Condition('foo', 'bar',3)
+        cds.append_with_names( ('wibble', 'tos',), c)
+        self.assertIn('wibble', cds._names)
+
 
 class NodeMixinTests(unittest.TestCase):
 
@@ -11,7 +27,28 @@ class NodeMixinTests(unittest.TestCase):
         get_nodes returns list
         '''
         n = NodeMixin()
-        self.assertIsInstance(n.get_nodes(), list)
+        self.assertIsInstance(n.get_nodes(), NodeManager)
+
+
+
+class NodeManagerTests(unittest.TestCase):
+
+    def setUp(self):
+        self.m = NodeManager()
+
+    def test_can_append(self):
+        n = Node()
+        n.name = 'foo'
+        self.m.append(n)
+        self.assertIn(n, self.m)
+
+    def test_get_by_name(self):
+        n = Node()
+        n.name = 'foo'
+        self.m.append(n)
+        r = self.m.get(n.get_name())
+        self.assertIn(n, r)
+
 
 class MachineTests(unittest.TestCase):
 
@@ -68,8 +105,10 @@ class MachineTests(unittest.TestCase):
         self.m.add(n)
         cnds = n.conditions()
         keys = self.m.condition_keys
+        # print 'keys', keys
 
         for c in cnds:
+            # print 'c in',c
             self.assertTrue(str(c) in keys)
 
     def test_node_event(self):

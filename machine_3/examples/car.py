@@ -85,5 +85,5 @@ def run():
 	parts = [Body(), Dashboard(), Engine(), ECU()]
 	car.add(*parts)
 	car.turn(on=True)
-
+	return car
 	# import pdb; pdb.set_trace()

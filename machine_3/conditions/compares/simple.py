@@ -33,8 +33,12 @@ class Positive(Compare):
     '''
 
     def match_num(self, a, b):
-        if a < b: return True
-        return False
+        if a > b:
+            r = True
+        else:
+            r = False
+        # print 'Positive matching a, b', a, b, '==', r
+        return r
 
     def match_bool(self, a, b):
         if a is False and b is True: return True

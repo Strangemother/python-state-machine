@@ -1,1 +1,2 @@
-from machine import Machine
+from machine import *
+from managers import *

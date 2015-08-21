@@ -1,3 +1,5 @@
+g = None
+rc =  None
 
 class Runner(object):
 
@@ -27,7 +29,8 @@ class Runner(object):
     def car(self):
         from examples.car import run
         print 'running car'
-        run()
+        g = run()
+        return g
 
     def chain(self):
         from examples.chain import run
@@ -45,8 +48,32 @@ class Runner(object):
         print 'running simple'
         return run()
 
+    def rpc(self):
+        from examples.rpc import main
+        print 'running rpc'
+        global g
+        global rc
+        import rpyc as r
+        rc= r
+        g = main()
+        return g
+
+
     def machine(self):
         from examples.basic import run
         return run()
 
-        return ma
+    def clock(self):
+        from examples.clock import run
+        return run()
+
+    def conds(self):
+        from machine.managers import ConditionsManager
+        from conditions import Condition
+        from pprint import pprint
+
+        cds = ConditionsManager()
+        c= Condition('foo', 'bar',3)
+        cds.append_with_names( ('wibble', 'tos',), c)
+        pprint(cds._names)
+        return cds

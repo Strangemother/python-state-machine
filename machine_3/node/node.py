@@ -39,7 +39,6 @@ class GetSetMixin(object):
         for name in names:
             self.monitor_key(node, name)
 
-
     def monitor_key(self, node, name):
         '''
         watch events to changes of the supplied named key
@@ -109,6 +108,10 @@ class NodeBase(Conditions, GetSetMixin):
         '''
         # print '^  ', self, 'create event'
         self._event = Event(self)
+        self.__keys = self.keys()
+
+    def keys(self):
+        return self.get_attrs()
 
     def _dispatch(self, name, *args, **kw):
         '''
@@ -136,7 +139,9 @@ class NodeBase(Conditions, GetSetMixin):
         '''
         if self.react is True:
             ov = self.get(k)
-            self._dispatch('set', k, v, ov)
+            if k in self.keys():
+                self._dispatch('set', k, v, ov)
+
         return super(NodeBase, self).set(k,v)
 
     def get_attrs(self):
@@ -173,6 +178,14 @@ class NodeBase(Conditions, GetSetMixin):
         c = self.name or self.__class__.__name__
         return str('Node "{0}"'.format(c))
 
+    def __repr__(self):
+        kw = {
+            'cls_name': self.__class__.__name__,
+            'name': self.get_name(),
+        }
+
+        return '<nodes.Node:{cls_name}("{name}")>'.format(**kw)
+
 class Node(NodeBase):
     '''
     Exposed api for integration to the network. Extend with your
@@ -184,15 +197,17 @@ class Node(NodeBase):
     '''
 
     def __setattr__(self, name, value):
-        # print 'Node perform set', name#, value
-        # pv = self.get(name)
         v = self.set(name, value)
-        # print 'set:', name, pv, value, v
-        # super(Node, self).set(name, value)
 
     def __getattr__(self, name):
         print '__getattr__', name
         v = self.get(name)
-        # print 'Node get:', name, v
+        print 'Node get:', name, v
         return v
-        # return super(Node, self).get(name)
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        if key in self.__keys:
+            return self.set(key, value)
