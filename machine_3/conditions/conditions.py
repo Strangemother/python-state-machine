@@ -45,7 +45,7 @@ class Condition(ComparisonMixin):
     '''
 
 
-    def __init__(self, node, attr, value=None, valid=None):
+    def __init__(self, node, attr, value=None, valid=None, name=None):
         '''
         A condition requires
         a node (Node|String|iterable),
@@ -59,6 +59,7 @@ class Condition(ComparisonMixin):
         self.field = attr
         self.target = value
         self._valid_cb = valid
+        self.name=name
 
     def validate(self, parent_node, node, value, field):
         '''
@@ -109,5 +110,5 @@ class Condition(ComparisonMixin):
         return u'%s' % self.__str__()
 
     def __repr__(self):
-        s = self.__str__()
+        s = self.name if self.name is not None else self.__str__()
         return '<Condition: %s>' % (s,)
