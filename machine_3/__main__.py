@@ -14,6 +14,9 @@ if __name__ == '__main__':
         from root import *
         from examples.e1 import run
         m = run()
+
+
         n = m.nodes.get('TestNode')[0]
+
 
 

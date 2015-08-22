@@ -180,9 +180,10 @@ class Events(EventsAPI):
         cnds = self.find_conditions(node, field, v)
         return self.run_conditions(cnds, node, v, field)
 
+
     def _dispatch(self, name, node, *args, **kw):
         '''
-        Dispatch en event for the Machine to handle. This should
+        Dispatch an event for the Machine to handle. This should
         be lightweight string data hopefully.
         If the internal ._event is missing an error will occur.
         '''
@@ -236,8 +237,13 @@ class Nodes(Events):
         Change the value of the nodes returned from the node_name search
         '''
         nodes = self.get_nodes(node_name)
-        print 'set_on_node', nodes
+        print 'set_on_node', node_name, nodes
+        if nodes is None:
+            print 'Machine', self, ':: No nodes', node_name
+            return
+
         for node in nodes:
+            print 'Setting', node, key, 'to', value
             node.set(key, value)
 
 
@@ -259,6 +265,11 @@ class Machine(Nodes, Conditions, NodeMixin):
        self.dispatch_init(name)
        self.remote = Connection(self)
 
+    def event_set(self, node, name, *args, **kw):
+        print '-- Machine Event:', str(node), '::', name, '::', args,'::', kw
+        self.remote.set(node, name, args[0], args[1])
+        super(Machine, self).event_set(node, name, *args, **kw)
+
     def nodemanager_event(self, name, node):
         print 'NodeManager event', name, node
         if name == 'integrate':
@@ -274,6 +285,9 @@ class Machine(Nodes, Conditions, NodeMixin):
         }
 
         return '<machine.Machine:{cls_name}("{name}")>'.format(**kw)
+
+    def add_peer(self, string):
+        self.remote.peers.append(string)
 
     def online(self):
         self.remote.create()

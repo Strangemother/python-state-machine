@@ -67,8 +67,6 @@ class Manager(list):
 
         except TypeError, te:
             pass
-
-        node.react = True
         return n
 
     def _append(self, name, item):

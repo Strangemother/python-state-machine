@@ -137,6 +137,7 @@ class NodeBase(Conditions, GetSetMixin):
         allowing property() changes to be perpetuated.
         return is the result of the super call to set()
         '''
+        print 'node', self, k,v
         if self.react is True:
             ov = self.get(k)
             if k in self.keys():
@@ -197,6 +198,7 @@ class Node(NodeBase):
     '''
 
     def __setattr__(self, name, value):
+        print 'node has set', name, value
         v = self.set(name, value)
 
     def __getattr__(self, name):

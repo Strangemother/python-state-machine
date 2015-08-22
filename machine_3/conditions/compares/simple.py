@@ -68,6 +68,7 @@ class Negative(Positive):
 class Changed(Compare):
 
     def match(self, a, b):
+        print 'Condition Changed', a,b
         if a != b:
             return True
         return False
