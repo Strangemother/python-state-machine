@@ -22,7 +22,6 @@ class Runner(object):
             print '{0}'.format(x)
 
     def hello(self):
-
         s = 'Hello?.. Are you there?.. Can you hear me?..'
         return s
 
@@ -36,7 +35,6 @@ class Runner(object):
         from examples.chain import run
         print 'running chain'
         run()
-
 
     def direction(self):
         from examples.direction import run
@@ -57,7 +55,6 @@ class Runner(object):
         rc= r
         g = main()
         return g
-
 
     def machine(self):
         from examples.basic import run
