@@ -1,1 +1,15 @@
-disco-db
+CherryPy
+Pyro4
+argparse
+axel
+blessings
+blinker
+click
+funcsigs
+mock
+nose
+pbr
+plumbum
+pyCLI
+termcolor
+wsgiref
