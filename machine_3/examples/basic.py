@@ -15,7 +15,7 @@ class TestNode(Node):
     def conditions(self):
         C = Condition
         return (
-            C('TestReactNode', 'heard_food', True, self.heard_food),
+            C('TestReactNode', 'heard_food', True, self.heard_food, name='test_heard_food'),
         )
 
 class TestReactNode(Node):
@@ -35,9 +35,9 @@ class TestReactNode(Node):
     def conditions(self):
         C = Condition
         return (
-            C('TestNode', 'age', 3, self.node_age),
-            C('TestNode', 'age', C.CHANGED, self.node_age_changed),
-            C('TestNode', 'food', C.CHANGED, self.node_food_changed)
+            C('TestNode', 'age', 3, self.node_age, name='react_age_3'),
+            C('TestNode', 'age', C.CHANGED, self.node_age_changed, name='react_age_change'),
+            C('TestNode', 'food', C.CHANGED, self.node_food_changed, name='react_food_change')
         )
 
 
