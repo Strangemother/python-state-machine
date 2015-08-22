@@ -1,6 +1,13 @@
 from axel import Event
 from managers import NodeManager, ConditionsManager
 from pprint import pprint
+from termcolor import colored, cprint
+from bridge import Connection
+
+def cl(color, *args):
+    t = [str(x) for x in args]
+    s = ' '.join(t)
+    cprint(s,color)
 
 
 class NodeMixin(object):
@@ -28,20 +35,7 @@ class NodeMixin(object):
             nodes = self.nodes[name]
             #print 'found nodes', nodes
 
-        # print 'dispatch ask'
-        # print 'receive ask'
-        # print 'provide lazy object to callback'
-
         return nodes
-
-class Connection(object):
-
-    def connect(self):
-        print 'perform connection'
-
-        # Does this connection exist?
-        #   Join
-        # else Create and join
 
 
 class Conditions(object):
@@ -52,13 +46,13 @@ class Conditions(object):
         Read the conditions of a node.
         '''
         cnds = node.conditions()
-        print 'get conditions for node', node
+        cl('yellow', 'get conditions for node', node)
         for c in cnds:
             self.integrate_condition(c, node)
 
     def integrate_condition(self, cond, node):
         names = self.get_integration_names(node, cond)
-        print 'integrate conditions', node, cond, names
+        # cl('yellow', 'integrate conditions', node, cond, names)
         self.conditions.append_with_names(names, cond)
         # node, condition assications
         ck = self.condition_keys
@@ -69,129 +63,43 @@ class Conditions(object):
 
         ck[sc].append(node.get_name())
 
-
     def get_integration_names(self, node, condition):
         node_name = node.get_name()
         names = (node_name, str(condition), )
         return names
 
-    def _integrate_condition(self, condition, node):
-        '''
-        integrate the condition into the chain, calling
-        the node when the condition is met.
-        '''
-        # print '+   integrate_condition', condition
-        ks = self.condition_keys
-        c = condition
-
-        ng_name = node.get_name()
-        node_name = c.watch
-        # name used in keys and flat
-        name = '{0}-{1}' .format(ng_name, str(c) )
-        # by sub string {watch}_{field}
-        ss = '{0}-{1}_{2}'.format(ng_name, node_name, c.field)
-        condition_name = '{0}_{1}'.format(node_name, c.field)
-        condition_full = '{0}_{1}_{2}'.format(node_name, c.field, c.target)
-
-        cnodes = self.condition_nodes
-
-        # by node name.
-        if (node_name in ks) is False:
-            # add list for conditions by name
-            ks[node_name] = []
-
-        if (ss in ks) is False:
-            ks[ss] = []
-
-        if (name in ks) is False:
-            ks[name] = []
-
-        if (ng_name in cnodes) is False:
-            cnodes[ng_name] = []
-
-        if (name in cnodes) is False:
-            cnodes[name] = []
-
-
-        if (condition_name in ks) is False:
-            ks[condition_name] = []
-
-        if (condition_full in ks) is False:
-            ks[condition_full] = []
-
-        if (condition_name in cnodes) is False:
-            cnodes[condition_name] = []
-
-
-        # Flat lit of all conditions, met with string weakref
-        cnds = self.conditions
-
-        # add to flat table.
-        cnds[name] = condition
-        # add to many keys.
-        ks[name].append(name)
-        ks[node_name].append(name)
-        ks[ss].append(name)
-        ks[condition_name].append(name)
-        ks[condition_full].append(name)
-        cnodes[ng_name].append(name)
-        cnodes[name].append(node)
-        cnodes[condition_name].append(node)
-        # print '+ ', name, '  Condition integrated'
-
     def run_conditions(self, conditions, node, value, field):
         # pprint(self.conditions._names)
-        print 'run conditions', conditions, node, field
+        # cl('yellow', 'run conditions', conditions, node, field)
         pairs = []
         # fetch associated conditions.
-        # print 'nodes on name', node.get_name(), self.conditions.get( node.get_name() )
         # make the condition perform the compare
         for cond in conditions:
-            # print 'looking at', cond
-            print self.condition_keys
             # get associated nodes for the condition
             node_names = self.condition_keys.get(str(cond)) or []
             # loop and get associated condition
             for nn in node_names:
                 s = '{0}-{1}'.format(nn, str(cond))
-                r= self.conditions.get(s) or []
-                # print 'looking for', s, r
-                pairs.extend( [(self.nodes.get(nn), r,)] )
+                r = self.conditions.get(s) or []
+                f = [(self.nodes.get(nn), set(r),)]
+                cl('yellow', 'found', f)
+                pairs.extend( f )
 
         res = {}
         for parent_nodes, _conditions in pairs:
             for cnd in _conditions:
                 for pn in parent_nodes:
                     v = cnd.validate(pn, node, value, field)
-                    print '  ', cnd, '==', v
                     n = '{0}-{1}'.format(pn.get_name(), str(cnd))
                     res[n]= v
-
-        print 'Found ', res
-
+        cl('blue', 'conditions', res)
         return res
 
-        for condition in set(_conditions):
-            # get matching conditions for names.
-            print parent_node_name, node, field
-            n = '{0}-{1}_{2}'.format(parent_node_name, node.get_name(), field)
-            print 'parent_conditions ', n
-            parent_conditions = self.conditions.get(n) or []
-            print 'parent_conditions', parent_conditions
-            conds += [ (parent_node_name, x,) for x in parent_conditions]
-        print 'conditions match', conds
-
-        for pn, cnd in conds:
-            # print '  condition', cnd, cnd.target, 'for', pn
-            v = cnd.validate(pn, node, value, field)
-            # print '  ', cnd, '==', v
-
     def find_conditions(self, node, field, value):
-        print 'find conditions for', node, field, value
         n = '{0}_{1}_{2}'.format(node.get_name(), field, value)
         # print '+  find conditions on', n
         cnds = self.get_conditions(node, field, value)
-        print '-- Matches condition', cnds
+        # cl('yellow', '-- Matches condition', cnds)
         return cnds
 
     def get_conditions(self, node, name, value=None):
@@ -199,7 +107,7 @@ class Conditions(object):
         Get conditions based upon node and name
         '''
         node_name = node
-        print 'get condition', node, name, value
+        cl('red', 'get condition', node, name, value)
         cnds = self.conditions
 
         if hasattr(node_name, 'get_name'):
@@ -213,12 +121,10 @@ class Conditions(object):
             vcn = '{0}_{1}_{2}'.format(node_name, name, value)
             match_names += (vcn,)
 
-        print '  try: ', match_names
-
         res = []
         for _n in match_names:
             res += self.get_conditions_by_name(_n) or []
-        print 'found conditions', res
+        # print 'found conditions', res
         return set(res)
 
     def get_conditions_by_name(self, name):
@@ -318,7 +224,24 @@ class Nodes(Events):
         self.dispatch_integrate(node)
         node.react = True
 
-class Machine(Connection, Nodes, Conditions, NodeMixin):
+    def get_nodes(self, node_name):
+        '''
+        return the value from a node through node search
+        '''
+        ns = self.nodes.get(node_name)
+        return ns
+
+    def set_on_node(self, node_name, key, value):
+        '''
+        Change the value of the nodes returned from the node_name search
+        '''
+        nodes = self.get_nodes(node_name)
+        print 'set_on_node', nodes
+        for node in nodes:
+            node.set(key, value)
+
+
+class Machine(Nodes, Conditions, NodeMixin):
     '''
     The machine connects the nodes and manages the addition
     and removal of nodes to the network.
@@ -332,7 +255,9 @@ class Machine(Connection, Nodes, Conditions, NodeMixin):
        self.condition_nodes = {}
        self.nodes = NodeManager(self.nodemanager_event)
        self._event = Event(self)
+       cl('cyan', 'Ready Machine', name)
        self.dispatch_init(name)
+       self.remote = Connection(self)
 
     def nodemanager_event(self, name, node):
         print 'NodeManager event', name, node
@@ -350,6 +275,9 @@ class Machine(Connection, Nodes, Conditions, NodeMixin):
 
         return '<machine.Machine:{cls_name}("{name}")>'.format(**kw)
 
+    def online(self):
+        self.remote.create()
+        self.loop()
+
     def loop(self):
-        while self._stop == False:
-            pass
+        self.remote.wait()
