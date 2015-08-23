@@ -1,5 +1,6 @@
 import Pyro4
 from axel import Event
+from tools import color_print as cl
 
 class Bridge(object):
 
@@ -20,6 +21,39 @@ class Bridge(object):
         return True
 
 
+class PyroAdapter(object):
+
+    def __init__(self):
+        self._daemon = None
+
+    def setup_pyro(self):
+        import config as _c
+        _k = [x if x.startswith('__') is False else None for x in dir(_c)]
+        keys = filter(None, _k)
+        for name in keys:
+            setattr(Pyro4.config, name, getattr(_c,name))
+
+    def daemon(self):
+        if self._daemon is None:
+            self.setup_pyro()
+            self._daemon = Pyro4.Daemon()
+        return self._daemon
+
+    def register(self, item):
+        if self._daemon is None:
+            self.daemon()
+        return self._daemon.register(item)
+
+    def get_nameserver(self):
+        if self._daemon is None:
+            self.setup_pyro()
+        try:
+            return Pyro4.locateNS()
+        except Pyro4.errors.NamingError as e:
+            # no name server
+            return None
+
+
 class Connection(object):
 
     def __init__(self, machine, peers=None):
@@ -34,26 +68,35 @@ class Connection(object):
     def create(self):
         print 'perform connection'
         m = self.machine
-        b = Bridge(m)
-        d = Pyro4.Daemon()
-        uri = d.register(b)
-        ns = self.get_nameserver()
+        b, a, d, uri = self.create_bridge(m)
+        self.uri = uri
+        self.bridge = b
+        self.daemon = d
+        self.adapter = a
+        self._created = True
+        return b
+
+    def create_bridge(self, machine):
+        '''
+        Create a bridge for the machine to communicate though.
+        When changes occur to a node, the machine dispatches this as
+        an event though the bridge.
+        '''
+        b = Bridge(machine)
+        a = PyroAdapter()
+        d = a.daemon()
+        uri = a.register(b)
+        ns = a.get_nameserver()
 
         if ns is not None:
             n = 'machine.{0}'.format(m.name)
             ns.register(n, uri)
-            print 'URI', n, '::', uri
+            cl('red', 'URI', n, '::', uri)
         else:
-            print 'URI (no NS)', uri
+            cl('red', 'URI (no NS)', uri)
 
-        self.uri = uri
-        self.bridge = b
-        self.daemon = d
-        self._created = True
-        return b
-        # Does this connection exist?
-        #   Join
-        # else Create and join
+        return (b, a, d, uri)
+
 
     def set(self, name, field, value, value_from):
         '''
@@ -106,12 +149,7 @@ class Connection(object):
         return str(r)
 
     def get_nameserver(self):
-        try:
-            return Pyro4.locateNS()
-        except Pyro4.errors.NamingError as e:
-            # no name server
-            return None
-
+        self.adapter.get_nameserver()
 
     def wait(self):
         '''
@@ -121,4 +159,3 @@ class Connection(object):
             self.daemon.requestLoop()
         except KeyboardInterrupt as e:
             print 'Stop remote listening'
-
