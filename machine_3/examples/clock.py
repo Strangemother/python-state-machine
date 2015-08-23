@@ -35,7 +35,7 @@ class Hand(Node):
     threshold = 4
 
     def tick(self):
-        if self.value > self.threshold:
+        if self.value > self.threshold + 1:
             # print 'clock reset over value.'
             self.value = 0
         print 'Tick ', self.__class__.__name__,':', self.value
@@ -54,10 +54,11 @@ class Minute(Hand):
 
     def conditions(self):
         return (
-            C(self.monitor, 'value', C.POSITIVE, 'tock'),
+            C(self.monitor, 'value', C.CHANGED, 'tock'),
         )
 
     def tock(self, node, value, field):
+
         if value > self.threshold:
             self.value += 1
 
