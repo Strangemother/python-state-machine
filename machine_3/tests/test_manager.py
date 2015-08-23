@@ -3,7 +3,7 @@ from mock import Mock, MagicMock
 from ..node import Node
 from ..machine.managers import Manager, ConditionsManager
 from ..conditions import Condition
-from ..machine import NodeMixin, Machine, NodeManager
+from ..machine import Machine, NodeManager
 
 class ManagerTests(unittest.TestCase):
 

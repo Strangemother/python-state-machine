@@ -1,23 +1,12 @@
 import unittest
 from mock import Mock
 
-from ..machine import NodeMixin, Machine, NodeManager
+from ..machine import Machine, NodeManager
 from ..runner import Runner
 from ..examples.basic import TestNode, TestReactNode
 from ..node import Node
 
 from ..conditions import Condition
-
-
-
-class NodeMixinTests(unittest.TestCase):
-
-    def test_get_nodes(self):
-        '''
-        get_nodes returns list
-        '''
-        n = NodeMixin()
-        self.assertIsInstance(n.get_nodes(), NodeManager)
 
 
 class MachineTests(unittest.TestCase):

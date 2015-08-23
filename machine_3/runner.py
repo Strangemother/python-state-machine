@@ -5,9 +5,28 @@ class Runner(object):
 
     def run(self, cmd, *args, **kwargs):
 
-        m = getattr(self, cmd)
+        try:
+            m = getattr(self, cmd)
+        except AttributeError as e:
+            m = None
+
         if m is not None:
             return m(*args, **kwargs)
+        else:
+            import examples as _e
+            m = __import__('examples', fromlist=[cmd])
+            _k = [x if x.startswith('__') is False else None for x in dir(_e)]
+            keys = filter(None, _k)
+            if cmd in keys:
+                # get the module
+                runmod = getattr(_e, cmd)
+
+                if hasattr(runmod, 'main'):
+                    return runmod.main()
+                if hasattr(runmod, 'run'):
+                    return runmod.run()
+                else:
+                    print 'Could not run module', cmd
 
     def ran(self):
         self._ran = True
@@ -24,45 +43,6 @@ class Runner(object):
     def hello(self):
         s = 'Hello?.. Are you there?.. Can you hear me?..'
         return s
-
-    def car(self):
-        from examples.car import run
-        print 'running car'
-        g = run()
-        return g
-
-    def chain(self):
-        from examples.chain import run
-        print 'running chain'
-        run()
-
-    def direction(self):
-        from examples.direction import run
-        print 'running direction'
-        run()
-
-    def simple(self):
-        from examples.simple import run
-        print 'running simple'
-        return run()
-
-    def rpc(self):
-        from examples.rpc import main
-        print 'running rpc'
-        global g
-        global rc
-        import rpyc as r
-        rc= r
-        g = main()
-        return g
-
-    def machine(self):
-        from examples.basic import run
-        return run()
-
-    def clock(self):
-        from examples.clock import run
-        return run()
 
     def conds(self):
         from machine.managers import ConditionsManager
