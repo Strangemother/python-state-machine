@@ -1,6 +1,7 @@
-import sys
 from runner import Runner
+from root import write_sys
 
+import sys
 global g
 
 if __name__ == '__main__':

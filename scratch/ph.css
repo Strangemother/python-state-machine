@@ -1,0 +1,50 @@
+body {
+    font-size: inherit;
+}
+
+body div.body {
+    background-color: #151515;
+    color: #636363;
+}
+
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
+    background-color: #111;
+    font-weight: bold;
+    color: #DDD;
+    border-bottom: 1px solid #000;
+}
+
+ul {}
+
+div.related {
+    background-color: #33454C;
+    font-size: 1em;
+    line-height: 3em;
+}
+
+.documentwrapper {
+    background-color: #0C171B;
+}
+
+pre {
+    background-color: black;
+    border: 1px solid #353535;
+}
+
+code {
+    background-color: #000;
+}
+
+div.note {
+    background-color: #333;
+    color: #C7C7C7;
+    border: solid 1px #000;
+}
+
+.footer {
+    background-color: #0A0A0A;
+}
+
+div.sphinxsidebar a {
+    color: #57686F;
+}
