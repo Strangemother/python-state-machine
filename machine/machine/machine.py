@@ -5,7 +5,8 @@ from axel import Event
 from managers import NodeManager, ConditionsManager
 from bridge import Connection
 from integration import ConditionIntegrate, NodeIntegrate
-
+from tools.daemon import Daemon
+from time import time as _time
 from tools import color_print as cl
 
 
@@ -23,9 +24,11 @@ class Machine(NodeIntegrate, ConditionIntegrate):
        self.condition_nodes = {}
        self.nodes = NodeManager(self.nodemanager_event)
        self._event = Event(self)
-       cl('cyan', 'Ready Machine', name)
+       # cl('cyan', 'Ready Machine', name)
        self.dispatch_init(name)
        self.remote = Connection(self)
+
+       self._start_time = int(_time())
 
     def event_set(self, node, name, *args, **kw):
         # print '-- Machine Event:', str(node), '::', name, '::', args,'::', kw
@@ -46,7 +49,8 @@ class Machine(NodeIntegrate, ConditionIntegrate):
             return self.nodes
 
         if (name in self.nodes) is False:
-            print 'node is not local'
+            node_dict = self.remote.send('get_nodes', name)
+            print 'remote nodes', node_dict
         else:
             nodes = self.nodes[name]
             #print 'found nodes', nodes
@@ -69,11 +73,20 @@ class Machine(NodeIntegrate, ConditionIntegrate):
         return '<machine.Machine:{cls_name}("{name}")>'.format(**kw)
 
     def add_peer(self, string):
+        self._bridged = True
         self.remote.peers.append(string)
+        self.remote.resolve_peers()
 
-    def online(self):
-        self.remote.create()
+    def daemon(self):
+        pidfile = './machine.{0}.pid'.format(self.name)
+        _d = Daemon(pidfile)
+        _d.run = self.wait
+        return _d
+
+    def wait(self):
+        self.remote.ready()
         self.loop()
 
     def loop(self):
         self.remote.wait()
+

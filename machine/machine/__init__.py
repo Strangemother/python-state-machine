@@ -1,2 +1,2 @@
-from machine import *
-from managers import *
+from machine import Machine
+from managers import Manager, NodeManager, ConditionsManager
