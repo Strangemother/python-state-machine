@@ -16,7 +16,7 @@
 # LOGWIRE             =  False
 # JSON_MODULE         =  'json'
 # NS_HOST             =  'localhost'
-HOST                =  '0.0.0.0'
+# HOST                =  '0.0.0.0'
 # PICKLE_PROTOCOL_VERSION =  2
 # NS_BCHOST           =  None
 # AUTOPROXY           =  True
