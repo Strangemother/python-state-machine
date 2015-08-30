@@ -100,12 +100,13 @@ class NodeBase(Conditions, GetSetMixin):
             return self.__class__.__name__
         return self.name
 
-    def __init__(self):
+    def __init__(self, name=None):
         '''
         The init method has very little to do (hopefully less)
         the self._event is instantiated for Machine callback.
         This should be taken off the __init__ eventually.
         '''
+        self.name = name
         # print '^  ', self, 'create event'
         self._event = Event(self)
         self.__keys = self.keys()
@@ -142,7 +143,6 @@ class NodeBase(Conditions, GetSetMixin):
             ov = self.get(k)
             if k in self.keys():
                 self._dispatch('set', k, v, ov)
-
         return super(NodeBase, self).set(k,v)
 
     def get_attrs(self):
@@ -187,6 +187,7 @@ class NodeBase(Conditions, GetSetMixin):
 
         return '<nodes.Node:{cls_name}("{name}")>'.format(**kw)
 
+
 class Node(NodeBase):
     '''
     Exposed api for integration to the network. Extend with your
@@ -213,3 +214,29 @@ class Node(NodeBase):
     def __setitem__(self, key, value):
         if key in self.__keys:
             return self.set(key, value)
+
+
+class ProxyNode(Node):
+    '''
+    A proxy node simulates node calls on a remote object.
+    '''
+    def __repr__(self):
+        kw = {
+            'cls_name': self.__class__.__name__,
+            'name': self.get_name(),
+        }
+
+        return '<nodes.ProxyNode:{cls_name}("{name}")>'.format(**kw)
+
+    def set(self, k, v):
+        '''
+        Set an attribute to the node and dispatch an event handled by the
+        Machine to inform the network. This is wrapped by the __setattr__
+        allowing property() changes to be perpetuated.
+        return is the result of the super call to set()
+        '''
+        # print 'node', self, k,v
+        if self.react is True:
+            ov = self.get(k)
+            self._dispatch('set', k, v, ov)
+        return super(NodeBase, self).set(k,v)
