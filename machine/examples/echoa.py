@@ -3,6 +3,37 @@ from node import Node
 from conditions import Condition
 
 
+class SlowEcho(Node):
+    computing = False
+
+    def called(self, node, value, field):
+        print 'Slow echo will respond', node
+
+
+    def conditions(self):
+        C = Condition
+        return (
+            C('Entity', 'announce', True, self.called),
+        )
+
+
+class Entity(Node):
+    announce = False
+
+    def conditions(self):
+        C = Condition
+        return (
+            C('TestNode', 'alpha', 3, self.alpha3),
+        )
+
+    def yell(self):
+        '''
+        Say something
+        '''
+        self.speech = 'HELLO!?'
+        self.announce = True
+
+
 class TestNode(Node):
     alpha = 1
     beta = 2
@@ -43,13 +74,17 @@ class TestReactNode(Node):
 
 
 def run():
-    print 'machine example'
+    print 'machine echo side a'
     ma = Machine('example')
-    n = TestNode()
-    n2 = TestReactNode()
-    ma.add(n)
-    ma.add(n2)
-    n.alpha = 3
+
+    ma.add(*[
+        SlowEcho(),
+        Entity(),
+        TestNode(),
+        TestReactNode(),
+        ])
+
+    ma.wait()
     return ma
 
 def main():
