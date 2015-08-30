@@ -29,6 +29,11 @@ import time
 import signal
 
 
+def _exit(num=0):
+    return None
+    return sys.exit(num)
+
+
 class Daemon(object):
     """
     A generic daemon class.
@@ -58,11 +63,11 @@ class Daemon(object):
             pid = os.fork()
             if pid > 0:
                 # Exit first parent
-                sys.exit(0)
+                return _exit(0)
         except OSError, e:
             sys.stderr.write(
                 "fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
-            sys.exit(1)
+            return _exit(1)
 
         # Decouple from parent environment
         os.chdir(self.home_dir)
@@ -74,11 +79,11 @@ class Daemon(object):
             pid = os.fork()
             if pid > 0:
                 # Exit from second parent
-                sys.exit(0)
+                return _exit(0)
         except OSError, e:
             sys.stderr.write(
                 "fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
-            sys.exit(1)
+            return _exit(1)
 
         if sys.platform != 'darwin':  # This block breaks on OS X
             # Redirect standard file descriptors
@@ -96,7 +101,7 @@ class Daemon(object):
 
         def sigtermhandler(signum, frame):
             self.daemon_alive = False
-            sys.exit()
+            return _exit()
 
         if self.use_gevent:
             import gevent
@@ -124,8 +129,6 @@ class Daemon(object):
         Start the daemon
         """
 
-        if self.verbose >= 1:
-            print "Starting..."
 
         # Check for a pidfile to see if the daemon already runs
         try:
@@ -140,8 +143,10 @@ class Daemon(object):
         if pid:
             message = "pidfile %s already exists. Is it already running?\n"
             sys.stderr.write(message % self.pidfile)
-            sys.exit(1)
+            return
 
+        if self.verbose >= 1:
+            print "Starting..."
         # Start the daemon
         self.daemonize()
         self.run(*args, **kwargs)
@@ -184,7 +189,7 @@ class Daemon(object):
                     os.remove(self.pidfile)
             else:
                 print str(err)
-                sys.exit(1)
+
 
         if self.verbose >= 1:
             print "Stopped"
@@ -226,3 +231,4 @@ class Daemon(object):
         daemonized by start() or restart().
         """
         raise NotImplementedError
+
