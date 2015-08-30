@@ -58,3 +58,6 @@ docs/_build/
 # PyBuilder
 target/
 >>>>>>> a6ef3013d31492e6a0490861e71a502fb7ccdfa2
+scratch/crypto/numbers.py
+scratch/crypto/__init__.py
+MyProject.komodoproject
