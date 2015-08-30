@@ -15,7 +15,7 @@ class ConditionIntegrate(object):
 
     def integrate_condition(self, cond, node):
         names = self.get_integration_names(node, cond)
-        cl('yellow', 'integrate conditions', node, cond, names)
+        # cl('yellow', 'integrate conditions', node, cond, names)
         self.conditions.append_with_names(names, cond)
         # node, condition assications
         ck = self.condition_keys
@@ -32,8 +32,8 @@ class ConditionIntegrate(object):
         return names
 
     def run_conditions(self, conditions, node, value, field):
-        pprint(self.conditions._names)
-        cl('yellow', 'run conditions', conditions, node, field)
+        # pprint(self.conditions._names)
+        # cl('yellow', 'run conditions', conditions, node, field)
         pairs = []
         # fetch associated conditions.
         # make the condition perform the compare
@@ -45,7 +45,7 @@ class ConditionIntegrate(object):
                 s = '{0}-{1}'.format(nn, str(cond))
                 r = self.conditions.get(s) or []
                 f = [(self.nodes.get(nn), set(r),)]
-                cl('yellow', 'found', f)
+                # cl('yellow', 'found', f)
                 pairs.extend( f )
 
         res = {}
@@ -62,7 +62,7 @@ class ConditionIntegrate(object):
         n = '{0}_{1}_{2}'.format(node.get_name(), field, value)
         # print '+  find conditions on', n
         cnds = self.get_conditions(node, field, value)
-        cl('yellow', '-- Matches condition', cnds)
+        # cl('yellow', '-- Matches condition', cnds)
         return cnds
 
     def get_conditions(self, node, name, value=None):
@@ -87,7 +87,7 @@ class ConditionIntegrate(object):
         res = []
         for _n in match_names:
             res += self.get_conditions_by_name(_n) or []
-        print 'found conditions', res
+        # print 'found conditions', res
         return set(res)
 
     def get_conditions_by_name(self, name):
@@ -135,7 +135,6 @@ class Events(object):
 
         cnds = self.find_conditions(node, field, v)
         return self.run_conditions(cnds, node, v, field)
-
 
     def _dispatch(self, name, node, *args, **kw):
         '''
@@ -197,7 +196,7 @@ class NodeIntegrate(Events):
         Change the value of the nodes returned from the node_name search
         '''
         nodes = self.get_nodes(node_name)
-        print 'set_on_node', node_name, nodes
+        # print 'set_on_node', node_name, nodes
         if nodes is None:
             print 'Machine', self, ':: No nodes', node_name
             return
