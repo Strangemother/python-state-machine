@@ -2,7 +2,12 @@ import Pyro4
 from axel import Event
 from tools import color_print as cl
 
+
 class Bridge(object):
+    '''
+    A bridge is served by your running machine and called by
+    remote procedure.
+    '''
 
     def __init__(self, machine):
         self.machine = machine
@@ -20,8 +25,62 @@ class Bridge(object):
         self.machine.set_on_node(node_name, key, value)
         return True
 
+    def get_nodes(self, name=None):
+        print 'Fetch from bridge::', name
+        r = []
+        for node in self.machine.get_nodes(name):
+            t= 'node'
+            s= '%s.%s.%s' % (t, self.machine.name, node.get_name(), )
+            r.append(Address(s))
+        return r
+
+    def add_peer(self, uri):
+        print 'Bridge adding peer', uri
+        self.machine.add_peer(uri)
+        return (uri in peers)
+
+    def ping(self):
+        '''
+        Return useful (cheap) pointer to the member associating
+        machine information.
+        '''
+        print '!Pong.'
+        return 'info'
+
+    def info(self):
+        '''
+        Return information about this runnning machine instance.
+        '''
+        n = self.machine.name
+        st = self.machine._start_time
+        print 'someone asked for information'
+        return {
+            'name': n,
+            'start_time': st,
+        }
+
+    def call(self, method_name, *args, **kw):
+        '''
+        Call a method on this bridge returning the expected functional
+        values.
+        '''
+        if method_name in self.keys():
+            m = getattr(self, method_name)
+            return m(*args, **kw)
+        return False
+
+    def keys(self):
+        '''
+        Return a list of keys available on this bridge
+        '''
+        cdir = dir(self.__class__)
+        l = [x if x.startswith('_') is False else None for x in cdir]
+        return filter(None, l)
+
 
 class PyroAdapter(object):
+
+    _nameserver = False
 
     def __init__(self):
         self._daemon = None
@@ -48,10 +107,15 @@ class PyroAdapter(object):
         if self._daemon is None:
             self.setup_pyro()
         try:
-            return Pyro4.locateNS()
+            if self._nameserver is True:
+                return Pyro4.locateNS()
         except Pyro4.errors.NamingError as e:
             # no name server
             return None
+
+    def get_object(self, uri):
+        o = Pyro4.Proxy(uri)
+        return o
 
 
 class Connection(object):
@@ -61,12 +125,13 @@ class Connection(object):
         self._created = False
         self.peers = peers or []
         self._resolved_peers = {}
+        self.peer_alias = {}
 
     def machine_event(self):
-        print 'Connection heard', args
+        cl('yellow', 'Connection heard', args)
 
     def create(self):
-        print 'perform connection'
+        cl('yellow', 'perform connection')
         m = self.machine
         b, a, d, uri = self.create_bridge(m)
         self.uri = uri
@@ -75,6 +140,11 @@ class Connection(object):
         self.adapter = a
         self._created = True
         return b
+
+    def ready(self):
+        if self._created is False:
+            self.create()
+        return True
 
     def create_bridge(self, machine):
         '''
@@ -89,34 +159,60 @@ class Connection(object):
         ns = a.get_nameserver()
 
         if ns is not None:
-            n = 'machine.{0}'.format(m.name)
+            n = 'machine.{0}'.format(machine.name)
             ns.register(n, uri)
-            cl('red', 'URI', n, '::', uri)
+            cl('red', 'Bridge', n, '::', uri)
         else:
-            cl('red', 'URI (no NS)', uri)
+            cl('red', 'Bridge (no NS)', uri)
 
         return (b, a, d, uri)
 
+    def get_bridge(self):
+        if self._created is False:
+            b = self.create()
+        return self.bridge
+
+    def get_adapter(self):
+        if self._created is False:
+            b = self.create()
+        return self.adapter
+
+    def get_peers(self):
+        peers = self.resolve_peers().values()
+        return peers
+
+    def send(self, name, *args, **kwargs):
+        #print 'dispatching to peers', peers
+        peers = self.get_peers()
+        res = {}
+        for proxy in peers:
+            # print 'dispatch to name', name, proxy
+            meth = getattr(proxy, name)
+            if meth is None:
+                cl('red', 'bridge does not support {0} event'.format(name))
+            else:
+                n = proxy.get_name()
+                v = meth(*args, **kwargs)
+                res[n] = v
+        return res
 
     def set(self, name, field, value, value_from):
         '''
         Set a value on the network
         '''
-        print 'connection set', name, field, value, value_from
-        if self._created is False:
-            b = self.create()
-        else:
-            b = self.bridge
+
+        b = self.get_bridge()
 
         if b is not None:
-            print 'sending on', b
+            cl('green', 'sending on', b, name, field)
             # self.machine.event_set(name, field, value)
-            return self.dispatch_set(name, field, value)
+            return self.dispatch_event('set', name, field, value)
         else:
-            print 'did not dispatch value', field
+            cl('red', 'did not dispatch value', field)
+
         return True
 
-    def dispatch_set(self, name, field, value):
+    def dispatch_event(self, event_name, name, field, value):
         '''
         Tell all peers
         '''
@@ -126,18 +222,27 @@ class Connection(object):
             proxy = peers[machine]
             # print 'dispatch to name', name, proxy
             n = name.get_name() if hasattr(name, 'get_name') else name
-            proxy.set(n, field, value)
+            _bridge_method = getattr(proxy, event_name)
+            if _bridge_method is None:
+                cl('red', 'bridge does not support {0} event'.format(event_name))
+            else:
+                _bridge_method(n, field, value)
 
     def connect(self, uri):
-        o = Pyro4.Proxy(uri)
-        return o
+        '''
+        Connect to a remote machine
+        '''
+        machine = self.get_adapter().get_object(uri)
+        ping = machine.ping()
+        info = machine.call(ping)
+        self.peer_alias[info['name']] = uri
+        return machine
 
     def resolve_peers(self):
         for p in self.peers:
             _p = self._resolved_peers.get(p)
             if _p is None:
                 self._resolved_peers[p] = self.connect(p)
-
         return self._resolved_peers
 
     def resolve_name(self, name):
