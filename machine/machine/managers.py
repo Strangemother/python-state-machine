@@ -15,6 +15,8 @@ class Manager(list):
         return super(Manager, self).__contains__(key)
 
     def __getitem__(self, key):
+        if isinstance(key, int):
+            return list.__getitem__(self, key)
         return self._names[key]
 
     def get(self, name, default=None):
