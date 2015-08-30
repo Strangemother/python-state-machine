@@ -1,9 +1,7 @@
-CherryPy
 Pyro4
 argparse
 axel
 blessings
-blinker
 click
 funcsigs
 mock
