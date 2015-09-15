@@ -22,7 +22,10 @@ class Conditions(object):
         Returns a list of conditions to meet.
         '''
         if hasattr(self, '_conditions'):
-            return self.get('_conditions')
+            if hasattr(self, 'get') and self.get is not None:
+                return self.get('_conditions')
+            else:
+                return self._conditions
         return ()
 
 
@@ -78,41 +81,16 @@ class GetSetMixin(object):
         # setattr(self.__dict__, k, v)
         # print 'set', k, v
         self.__dict__[k] = v
-        #print 'dict', self.__dict__
+        # print 'dict', self.__dict__
         return self.get(k)
 
 
-class NodeBase(Conditions, GetSetMixin):
-    # A must-have field
-    #
-    name = None
+class MachineIntegration(object):
     _event = None
-    react = False
 
-    def get_name(self):
-        '''
-        Get the name of the Node, defaulting to the class name if
-        name is None.
-        Return is the name of this node to be integrated into a Machine
-        and it's network.
-        '''
-        if self.name is None:
-            return self.__class__.__name__
-        return self.name
-
-    def __init__(self, name=None):
-        '''
-        The init method has very little to do (hopefully less)
-        the self._event is instantiated for Machine callback.
-        This should be taken off the __init__ eventually.
-        '''
-        self.name = name
+    def _build_event(self):
         # print '^  ', self, 'create event'
         self._event = Event(self)
-        self.__keys = self.keys()
-
-    def keys(self):
-        return self.get_attrs()
 
     def _dispatch(self, name, *args, **kw):
         '''
@@ -130,6 +108,57 @@ class NodeBase(Conditions, GetSetMixin):
     def event_result(self, flag, result, handler):
         if flag is False:
             raise result
+
+
+class NodeObject(Conditions, MachineIntegration):
+
+    def __init__(self, name=None):
+        '''
+        The init method has very little to do (hopefully less)
+        the self._event is instantiated for Machine callback.
+        This should be taken off the __init__ eventually.
+        '''
+        self.name = name
+        self._build_event()
+
+
+    def get_name(self):
+        '''
+        Get the name of the Node, defaulting to the class name if
+        name is None.
+        Return is the name of this node to be integrated into a Machine
+        and it's network.
+        '''
+        if self.name is None:
+            return self.__class__.__name__
+        return self.name
+
+    def __str__(self):
+        c = self.name or self.__class__.__name__
+        return str('Node "{0}"'.format(c))
+
+    def __repr__(self):
+        kw = {
+            'cls_name': self.__class__.__name__,
+            'name': self.get_name(),
+        }
+
+        return '<nodes.Node:{cls_name}("{name}")>'.format(**kw)
+
+
+class NodeBase(NodeObject, GetSetMixin):
+    # A must-have field
+    #
+    name = None
+    react = False
+
+    def __init__(self, name=None):
+        super(NodeBase, self).__init__(name)
+        self.__keys = self.keys()
+        # print 'Cache keys are', self.__keys
+
+    def keys(self):
+        return self.get_attrs()
 
     def set(self, k, v):
         '''
@@ -175,18 +204,6 @@ class NodeBase(Conditions, GetSetMixin):
             ignore.append(name)
         return fields
 
-    def __str__(self):
-        c = self.name or self.__class__.__name__
-        return str('Node "{0}"'.format(c))
-
-    def __repr__(self):
-        kw = {
-            'cls_name': self.__class__.__name__,
-            'name': self.get_name(),
-        }
-
-        return '<nodes.Node:{cls_name}("{name}")>'.format(**kw)
-
 
 class Node(NodeBase):
     '''
@@ -203,9 +220,9 @@ class Node(NodeBase):
         v = self.set(name, value)
 
     def __getattr__(self, name):
-        print '__getattr__', name
+        # print '__getattr__', name
         v = self.get(name)
-        print 'Node get:', name, v
+        # print 'Node get:', name, v
         return v
 
     def __getitem__(self, key):
@@ -215,28 +232,3 @@ class Node(NodeBase):
         if key in self.__keys:
             return self.set(key, value)
 
-
-class ProxyNode(Node):
-    '''
-    A proxy node simulates node calls on a remote object.
-    '''
-    def __repr__(self):
-        kw = {
-            'cls_name': self.__class__.__name__,
-            'name': self.get_name(),
-        }
-
-        return '<nodes.ProxyNode:{cls_name}("{name}")>'.format(**kw)
-
-    def set(self, k, v):
-        '''
-        Set an attribute to the node and dispatch an event handled by the
-        Machine to inform the network. This is wrapped by the __setattr__
-        allowing property() changes to be perpetuated.
-        return is the result of the super call to set()
-        '''
-        # print 'node', self, k,v
-        if self.react is True:
-            ov = self.get(k)
-            self._dispatch('set', k, v, ov)
-        return super(NodeBase, self).set(k,v)

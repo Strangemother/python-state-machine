@@ -8,8 +8,10 @@ class ConditionIntegrate(object):
         '''
         Read the conditions of a node.
         '''
+        if hasattr(node, 'conditions') is False:
+            return
         cnds = node.conditions()
-        cl('yellow', 'get conditions for node', node)
+        # cl('yellow', 'get conditions for node', node)
         for c in cnds:
             self.integrate_condition(c, node)
 
@@ -198,10 +200,10 @@ class NodeIntegrate(Events):
         nodes = self.get_nodes(node_name)
         # print 'set_on_node', node_name, nodes
         if nodes is None:
-            print 'Machine', self, ':: No nodes', node_name
+            # print 'Machine', self, ':: No nodes', node_name
             return
 
         for node in nodes:
-            print 'Setting', node, key, 'to', value
+            # print 'Setting', node, key, 'to', value
             node.set(key, value)
 

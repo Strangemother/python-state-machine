@@ -118,6 +118,28 @@ class PyroAdapter(object):
         return o
 
 
+class Peers(object):
+
+    def __init__(self, machine, peers=None):
+        self.machine = machine
+        self._created = False
+        self.peers = peers or []
+        self._resolved_peers = {}
+        self.peer_alias = {}
+
+    def get_peers(self):
+        peers = self.resolve_peers().values()
+        return peers
+
+
+    def resolve_peers(self):
+        for p in self.peers:
+            _p = self._resolved_peers.get(p)
+            if _p is None:
+                self._resolved_peers[p] = self.connect(p)
+        return self._resolved_peers
+
+
 class Connection(object):
 
     def __init__(self, machine, peers=None):
@@ -126,6 +148,7 @@ class Connection(object):
         self.peers = peers or []
         self._resolved_peers = {}
         self.peer_alias = {}
+
 
     def machine_event(self):
         cl('yellow', 'Connection heard', args)

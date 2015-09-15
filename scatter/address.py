@@ -142,14 +142,12 @@ class Address(object):
         # get the machine and append it
         m = machine.name if hasattr(machine, 'name') else machine
         if m is not None: output.machines.append(m)
-        print 'added machine to output', m
 
         # Iterate provided machines list
         for m in fa.machines:
             nm = m
             if hasattr(m, 'name'): nm = getattr(m, 'name')
             # add the name to the output
-            print 'add another machine', nm
             output.machines.append(nm)
 
         # Iterate provided nodes.
@@ -165,7 +163,6 @@ class Address(object):
         n = node.get_name() if hasattr(node, 'get_name') else node
         # append the name to the output
         if n is not None: output.nodes.append(n)
-        print 'added a node', n
 
         prefix = 'machine'
         # auto define  if there are nodes.

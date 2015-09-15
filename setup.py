@@ -8,9 +8,9 @@ def get_deps():
     return res
 
 setup(
-    name = "statemachine",
+    name = "scatter",
     version = "0.1",
-    packages = ['machine'], # find_packages(),
+    packages = ['scatter'], # find_packages(),
     # scripts = ['say_hello.py'],
 
     # Project uses reStructuredText, so ensure that the docutils get

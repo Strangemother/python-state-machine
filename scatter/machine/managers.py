@@ -115,4 +115,5 @@ class ConditionsManager(Manager):
 class NodeManager(Manager):
 
     def get_item_name(self, item):
+
         return item.get_name()

@@ -39,13 +39,12 @@ class Runner(object):
         ks =  filter(None, pkeys)
         for x in ks:
             print '{0}'.format(x)
-
     def hello(self):
         s = 'Hello?.. Are you there?.. Can you hear me?..'
         return s
 
     def conds(self):
-        from machine.managers import ConditionsManager
+        from scatter.managers import ConditionsManager
         from conditions import Condition
         from pprint import pprint
 
