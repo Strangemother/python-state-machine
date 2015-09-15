@@ -61,3 +61,6 @@ target/
 scratch/crypto/numbers.py
 scratch/crypto/__init__.py
 MyProject.komodoproject
+scratch/crypto/alpha.py
+scratch/crypto/unicode.py
+vernam.py
