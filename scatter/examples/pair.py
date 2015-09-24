@@ -47,8 +47,8 @@ def run():
     ma = Machine('example')
     n = TestNode()
     n2 = TestReactNode()
-    ma.add(n)
-    ma.add(n2)
+    ma.nodes.add(n)
+    ma.nodes.add(n2)
     n.alpha = 3
     return ma
 

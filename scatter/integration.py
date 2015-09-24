@@ -1,10 +1,9 @@
 from tools import color_print as cl
-from pprint import pprint
+
 
 class ConditionIntegrate(object):
 
-
-    def read_conditions(self, node):
+    def read_node(self, node):
         '''
         Read the conditions of a node.
         '''
@@ -12,13 +11,28 @@ class ConditionIntegrate(object):
             return
         cnds = node.conditions()
         # cl('yellow', 'get conditions for node', node)
-        for c in cnds:
+        self.integrate_conditions(cnds, node)
+
+    def integrate_conditions(self, conditions, node):
+        '''
+        Implement a list of conditions against one node.
+        '''
+        for c in conditions:
             self.integrate_condition(c, node)
 
     def integrate_condition(self, cond, node):
+        '''
+        Integrate the conditions into the condition runner
+        '''
+        if hasattr(self, 'condition_keys') is False:
+            setattr(self, 'condition_keys', {})
+
+        if hasattr(self, 'condition_nodes') is False:
+            setattr(self, 'condition_nodes', {})
+
         names = self.get_integration_names(node, cond)
         # cl('yellow', 'integrate conditions', node, cond, names)
-        self.conditions.append_with_names(names, cond)
+        self.append_with_names(names, cond)
         # node, condition assications
         ck = self.condition_keys
         sc = str(cond)
@@ -45,7 +59,7 @@ class ConditionIntegrate(object):
             # loop and get associated condition
             for nn in node_names:
                 s = '{0}-{1}'.format(nn, str(cond))
-                r = self.conditions.get(s) or []
+                r = self.get(s) or []
                 f = [(self.nodes.get(nn), set(r),)]
                 # cl('yellow', 'found', f)
                 pairs.extend( f )
@@ -113,97 +127,4 @@ class ConditionIntegrate(object):
         a = [n, args[0]]
         s = '_'.join(a)
         return s
-
-
-class Events(object):
-
-    def node_event(self, node, name, *args, **kw):
-        # print '-- Event:', str(node), name, args, kw
-        # s = self.condition_name(node, name, *args, **kw)
-
-        if name == 'set':
-            self.event_set(node, *args, **kw)
-        self._dispatch(name, node, *args, **kw)
-        # The value has been set.
-        # check the condition of other nodes.
-
-    def event_set(self, node, *args, **kw):
-        '''
-        the set event passing the node field and value.
-        optional original value for direction calculation
-        '''
-        field = args[0]
-        v = args[1]
-
-        cnds = self.find_conditions(node, field, v)
-        return self.run_conditions(cnds, node, v, field)
-
-    def _dispatch(self, name, node, *args, **kw):
-        '''
-        Dispatch an event for the Machine to handle. This should
-        be lightweight string data hopefully.
-        If the internal ._event is missing an error will occur.
-        '''
-        self.on_event(name, node, *args, **kw)
-        # print 'dispatch', name, args[0]
-        if self._event is not None:
-            res = self._event(name, node, *args, **kw)
-
-            if res is not None:
-                self.event_result(res)
-        else:
-            print 'x  ', self, "Error on _event existence"
-
-    def on_event(self, name, node, *args, **kw):
-        pass
-        # print 'EVENT', name, node
-
-    def dispatch_integrate(self, node):
-        return self._dispatch('integrate', node)
-
-    def dispatch_init(self, name):
-        return self._dispatch('init', name)
-
-    def event_result(self, flag, result, handler):
-        if flag is False:
-            raise result
-
-
-class NodeIntegrate(Events):
-
-    def add(self, *args):
-        '''
-        add a node to the manager
-        '''
-        for node in args:
-            # print '+   add_node', node
-            self.nodes.append(node)
-            self.integrate_node(node)
-
-    def integrate_node(self, node):
-        self.read_conditions(node)
-        node._event += self.node_event
-        self.dispatch_integrate(node)
-        node.react = True
-
-    def get_nodes(self, node_name):
-        '''
-        return the value from a node through node search
-        '''
-        ns = self.nodes.get(node_name)
-        return ns
-
-    def set_on_node(self, node_name, key, value):
-        '''
-        Change the value of the nodes returned from the node_name search
-        '''
-        nodes = self.get_nodes(node_name)
-        # print 'set_on_node', node_name, nodes
-        if nodes is None:
-            # print 'Machine', self, ':: No nodes', node_name
-            return
-
-        for node in nodes:
-            # print 'Setting', node, key, 'to', value
-            node.set(key, value)
 

@@ -14,6 +14,3 @@ if __name__ == '__main__':
         from examples.basic import run
         m = run()
         n = m.nodes.get('TestNode')[0]
-
-
-

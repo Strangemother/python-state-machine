@@ -23,7 +23,7 @@ class Entity(Node):
     def conditions(self):
         C = Condition
         return (
-            C('TestNode', 'alpha', 3, self.alpha3),
+            # C('TestNode', 'alpha', 3, self.alpha3),
         )
 
     def yell(self):

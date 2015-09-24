@@ -1,4 +1,6 @@
 from axel import Event
+from integration import ConditionIntegrate
+
 
 class Manager(list):
 
@@ -22,7 +24,7 @@ class Manager(list):
     def get(self, name, default=None):
         try:
             return self._names[name]
-        except KeyError as e:
+        except KeyError:
             return default
 
     def append(self, *args):
@@ -37,13 +39,11 @@ class Manager(list):
             ref = self.integrate_item(item, names)
             self._append(ref, item)
 
-
     def get_item_name(self, item):
         return item
 
     def get_item_names(self, item):
-        return ( self.get_item_name(item), )
-
+        return (self.get_item_name(item), )
 
     def integrate_item(self, node, names=None):
         n = self.get_item_name(node)
@@ -66,8 +66,7 @@ class Manager(list):
                     if (s in self._names) is False:
                         self._names[s] = []
                     self._names[s].append(node)
-
-        except TypeError, te:
+        except TypeError:
             pass
         return n
 
@@ -77,7 +76,7 @@ class Manager(list):
         return item
 
 
-class ConditionsManager(Manager):
+class ConditionsManager(Manager, ConditionIntegrate):
 
     def get_item_names(self, item):
         watch_name = item.watch
@@ -98,7 +97,6 @@ class ConditionsManager(Manager):
         n = self.get_item_name(item)
         ns = self.get_item_names(item)
 
-
         for name in ns:
             if (name in self._names) is False:
                 if name != n:
@@ -112,8 +110,105 @@ class ConditionsManager(Manager):
         return str_n
 
 
-class NodeManager(Manager):
+class Events(object):
+
+    def event_set(self, node, *args, **kw):
+        '''
+        the set event passing the node field and value.
+        optional original value for direction calculation
+        '''
+        field = args[0]
+        v = args[1]
+
+        cnds = self.find_conditions(node, field, v)
+        return self.run_conditions(cnds, node, v, field)
+
+    def _dispatch(self, name, node, *args, **kw):
+        '''
+        Dispatch an event for the Machine to handle. This should
+        be lightweight string data hopefully.
+        If the internal ._event is missing an error will occur.
+        '''
+        self.on_event(name, node, *args, **kw)
+        # print 'dispatch', name, args[0]
+        if self._event is not None:
+            res = self._event(name, node, *args, **kw)
+
+            if res is not None:
+                self.event_result(res)
+            return res
+        else:
+            print 'x  ', self, "Error on _event existence"
+
+    def on_event(self, name, node, *args, **kw):
+        pass
+        # print 'EVENT', name, node
+
+    def event_result(self, flag, result, handler):
+        if flag is False:
+            raise result
+
+    def dispatch_integrate(self, node):
+        return self._dispatch('integrate', node)
+
+
+class NodeIntegrate(Events):
+
+    def add(self, *args):
+        '''
+        add a node to the manager
+        '''
+        for node in args:
+            # print '+   add_node', node
+            self.append(node)
+            self.integrate_node(node)
+
+    def integrate_node(self, node):
+        # self.read_conditions(node)
+        self._add_node(node)
+        # node._event += self.node_event
+        # self.dispatch_integrate(node)
+        node.react = True
+
+    def get_nodes(self, node_name=None, default=None):
+        '''
+        return the value from a node through node search
+        '''
+        ns = self.get(node_name, default)
+        return ns
+
+    def set_on_node(self, node_name, key, value):
+        '''
+        Change the value of the nodes returned from the node_name search
+        '''
+        nodes = self.get_nodes(node_name)
+        # print 'set_on_node', node_name, nodes
+        if nodes is None:
+            # print 'Machine', self, ':: No nodes', node_name
+            return
+
+        for node in nodes:
+            # print 'Setting', node, key, 'to', value
+            node.set(key, value)
+
+
+class NodeManager(Manager, NodeIntegrate):
+
+    def __init__(self, _add_node=None):
+        self._names = {}
+        self._event = Event(self)
+        self._add_node = _add_node
+
+
+    def node_event(self, node, name, *args, **kw):
+        # print '-- Event:', str(node), name, args, kw
+        # s = self.condition_name(node, name, *args, **kw)
+
+        if name == 'set':
+            self.event_set(node, *args, **kw)
+        self._dispatch(name, node, *args, **kw)
+        # The value has been set.
+        # check the condition of other nodes.
 
     def get_item_name(self, item):
-
         return item.get_name()

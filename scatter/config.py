@@ -9,7 +9,7 @@
 # NS_BCPORT           =  9091
 # THREADING2          =  False
 # POLLTIMEOUT         =  2.0
-# NS_PORT             =  9090
+NS_PORT             =  9090
 # NATPORT             =  0
 # PREFER_IP_VERSION   =  4
 # SERIALIZER          =  'serpent'

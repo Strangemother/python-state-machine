@@ -11,6 +11,7 @@ pliability. The Machine handles the heavy load.
 import inspect
 from axel import Event
 
+
 class Conditions(object):
     '''
     A Mixin construct to assist in applying and managing conditions.
@@ -69,7 +70,7 @@ class GetSetMixin(object):
         # self.fetch_get(k)
         try:
             return object.__getattribute__(self, k)
-        except AttributeError as e:
+        except AttributeError:
             pass
         return None
 
@@ -89,7 +90,7 @@ class MachineIntegration(object):
     _event = None
 
     def _build_event(self):
-        # print '^  ', self, 'create event'
+        print '^  ', self, 'create event'
         self._event = Event(self)
 
     def _dispatch(self, name, *args, **kw):
@@ -121,7 +122,6 @@ class NodeObject(Conditions, MachineIntegration):
         self.name = name
         self._build_event()
 
-
     def get_name(self):
         '''
         Get the name of the Node, defaulting to the class name if
@@ -146,89 +146,20 @@ class NodeObject(Conditions, MachineIntegration):
         return '<nodes.Node:{cls_name}("{name}")>'.format(**kw)
 
 
-class NodeBase(NodeObject, GetSetMixin):
-    # A must-have field
-    #
-    name = None
-    react = False
-
-    def __init__(self, name=None):
-        super(NodeBase, self).__init__(name)
-        self.__keys = self.keys()
-        # print 'Cache keys are', self.__keys
-
-    def keys(self):
-        return self.get_attrs()
-
-    def set(self, k, v):
-        '''
-        Set an attribute to the node and dispatch an event handled by the
-        Machine to inform the network. This is wrapped by the __setattr__
-        allowing property() changes to be perpetuated.
-        return is the result of the super call to set()
-        '''
-        # print 'node', self, k,v
-        if self.react is True:
-            ov = self.get(k)
-            if k in self.keys():
-                self._dispatch('set', k, v, ov)
-        return super(NodeBase, self).set(k,v)
-
-    def get_attrs(self):
-        '''
-        return the fields for this nbode to be associated on the network.
-        These are attributes and methods supplied to the class
-        '''
-        ignore = Node.__dict__.keys()
-        # ignore = reduce(lambda x, y: x+y, [x.__dict__.keys() for x in iter(classes)])
-        fields = []
-        classes = self.__class__.__mro__
-        # rint classes
-        for parent_class in iter(classes):
-            # print 'class', parent_class
-            keys = parent_class.__dict__.keys()
-            ckeys = self.__class__.__dict__.keys()
-            for model_field in keys:
-                is_cls = inspect.isclass(getattr(parent_class, model_field))
-                is_meta = model_field == 'Meta' and is_cls
-                name = model_field
-                if is_meta or model_field in ignore or model_field.startswith('__'):
-                    continue
-                if model_field in ckeys:
-                    fields.append(name)
-
-        for field in ignore:
-            name = field
-            if field in ignore or field.startswith('__'):
-                continue
-            ignore.append(name)
-        return fields
+class Node(NodeObject, GetSetMixin):
+    pass
 
 
-class Node(NodeBase):
-    '''
-    Exposed api for integration to the network. Extend with your
-    own class and provide attributes. Changes to the class attributes
-    will be dispatched as events through the Machine event monitoring.
+class TestNode(object):
 
-    Other nodes on the cloud waiting for the Condition of your change will
-    react.
-    '''
+    _event = None
 
-    def __setattr__(self, name, value):
-        # print 'node has set', name, value
-        v = self.set(name, value)
+    def __init__(self):
+        self._build_event()
 
-    def __getattr__(self, name):
-        # print '__getattr__', name
-        v = self.get(name)
-        # print 'Node get:', name, v
-        return v
+    def get_name(self):
+        return 'TestNode'
 
-    def __getitem__(self, key):
-        return self.get(key)
-
-    def __setitem__(self, key, value):
-        if key in self.__keys:
-            return self.set(key, value)
-
+    def _build_event(self):
+        print '^  ', self, 'create event'
+        self._event = Event(self)

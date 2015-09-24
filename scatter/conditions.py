@@ -1,7 +1,6 @@
 '''
 A condition
 '''
-from base import Base
 from compares.const import Const as const
 
 
