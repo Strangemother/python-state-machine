@@ -110,21 +110,3 @@ class Condition(ComparisonMixin):
     def __repr__(self):
         s = self.name if self.name is not None else self.__str__()
         return '<Condition: %s>' % (s,)
-
-
-class ConditionsMixin(object):
-    '''
-    A Mixin construct to assist in applying and managing conditions.
-    '''
-    _conditions = ()
-
-    def conditions(self):
-        '''
-        Returns a list of conditions to meet.
-        '''
-        if hasattr(self, '_conditions'):
-            if hasattr(self, 'get') and self.get is not None:
-                return self.get('_conditions')
-            else:
-                return self._conditions
-        return ()

@@ -1,4 +1,5 @@
 from axel import Event
+from integration import ConditionIntegrate
 
 
 class Manager(list):
@@ -75,7 +76,7 @@ class Manager(list):
         return item
 
 
-class ConditionsManager(Manager):
+class ConditionsManager(Manager, ConditionIntegrate):
 
     def get_item_names(self, item):
         watch_name = item.watch
@@ -197,6 +198,7 @@ class NodeManager(Manager, NodeIntegrate):
         self._names = {}
         self._event = Event(self)
         self._add_node = _add_node
+
 
     def node_event(self, node, name, *args, **kw):
         # print '-- Event:', str(node), name, args, kw
