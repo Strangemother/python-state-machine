@@ -15,10 +15,10 @@ class CacheMixin(object):
 
         __cache = self._get_cache()
 
-        if __cache.has_key(field) is not True:
+        if field in __cache is not True:
             __cache[field] = []
 
-        cnt=0
+        cnt = 0
 
         for node in nodes:
             written = self._write_cache(node, field)

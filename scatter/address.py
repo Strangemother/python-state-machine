@@ -7,6 +7,7 @@ from collections import deque, namedtuple
 
 AddressParts = namedtuple('AddressParts', 'prefix nodes machines')
 
+
 def make_hash(o):
 
     """
@@ -26,6 +27,7 @@ def make_hash(o):
         new_o[k] = make_hash(v)
 
     return hash(tuple(frozenset(sorted(new_o.items()))))
+
 
 class Address(object):
 
@@ -49,7 +51,6 @@ class Address(object):
 
     join_seperator = property(get_join_seperator, set_join_seperator)
     seperator = property(get_seperator, set_seperator)
-
 
     def __init__(self, name=None, *args, **kw):
 

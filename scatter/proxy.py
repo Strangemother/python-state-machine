@@ -72,3 +72,21 @@ class ProxyNode(Proxy):
     #     if v is None:
     #         v = object.__getattribute__(self,'get')(key)
     #     return v
+
+
+class ProxyMachine(ProxyNode):
+
+    def __init__(self, address):
+        self.address = address
+
+    def __repr__(self):
+        kw = {
+            'cls_name': self.__class__.__name__,
+            'name': self.get_name(),
+        }
+
+        return '<machines.ProxyMachine:{cls_name}("{name}")>'.format(**kw)
+
+    def __str__(self):
+        c = self.address or self.name or self.__class__.__name__
+        return str('Machine "{0}"'.format(c))

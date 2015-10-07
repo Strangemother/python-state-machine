@@ -144,9 +144,11 @@ class M(Node):
 
 def run():
 	m = Machine('Chain')
-	nodes = [A(), B(), C(), D(), E(), F(), G(), H(), I(), J(), K(), L(), M()]
-	m.add(*nodes)
-	# import pdb; pdb.set_trace()
+	a = A()
+	nodes = [a, B(), C(), D(), E(), F(), G(), H(), I(), J(), K(), L(), M()]
+	m.nodes.add(*nodes)
 	a=m.get_nodes('A')[0]
+	import pdb; pdb.set_trace()
 	a.set('on', True)
+	return m
 

@@ -1,5 +1,6 @@
 g = None
-rc =  None
+rc = None
+
 
 class Runner(object):
 
@@ -7,7 +8,7 @@ class Runner(object):
 
         try:
             m = getattr(self, cmd)
-        except AttributeError as e:
+        except AttributeError:
             m = None
 
         if m is not None:
@@ -36,9 +37,10 @@ class Runner(object):
         print 'Run the state machine: python machine [command]'
         keys = dir(self.__class__)
         pkeys = [x if x.startswith('__') is False else None for x in keys]
-        ks =  filter(None, pkeys)
+        ks = filter(None, pkeys)
         for x in ks:
             print '{0}'.format(x)
+
     def hello(self):
         s = 'Hello?.. Are you there?.. Can you hear me?..'
         return s
@@ -49,7 +51,29 @@ class Runner(object):
         from pprint import pprint
 
         cds = ConditionsManager()
-        c= Condition('foo', 'bar',3)
-        cds.append_with_names( ('wibble', 'tos',), c)
+        c = Condition('foo', 'bar', 3)
+        cds.append_with_names(('wibble', 'tos',), c)
         pprint(cds._names)
         return cds
+
+    def interface(self):
+        '''
+        Run the interface, a wrapper upon Cmd2
+        '''
+        from command.appcmd import App
+
+        class CliApp(App):
+
+            def invoke_args(self, callargs):
+                '''
+                Correct the init commands removing the first argument 'interface'
+                '''
+                return callargs[1:]
+
+        app = CliApp()
+
+        app.context({
+            'foo': 1
+        })
+
+        app.cmdloop()
