@@ -7,8 +7,7 @@ with a callback.
 A node is a very simple object designed to be lightweight for maximum
 pliability. The Machine handles the heavy load.
 '''
-from conditions import ConditionsMixin
-from mixins import GetSetMixin, NameMixin, EventMixin
+from mixins import GetSetMixin, NameMixin, EventMixin, ConditionsMixin
 from managers import NodeManager
 
 
@@ -32,31 +31,7 @@ class Node(NameMixin, ConditionsMixin, GetSetMixin, EventMixin):
 
     def set(self, k, v):
         self._dispatch('set', k, v)
+        valid = self._run_conditions(k, self.get(k), v, self)
         super(Node, self).set(k, v)
+        super(Node, self).set('_valid', valid)
 
-
-class NodeMixin(object):
-    '''
-    Mixin to assist in managing and reading Nodes in a Manager list.
-    '''
-    nodes = None
-
-    def _setup_nodes(self, node_callback=None):
-        self._node_callback = node_callback or self.node_event_handler
-        self.nodes = NodeManager(self._add_node_event_handler)
-
-    def _add_node_event_handler(self, node):
-        '''
-        Callback for a node being added to the node manager.
-        '''
-        # provide the node handler to the node
-        print 'node %s has been added to nodes' % (node, )
-        node._event_handlers += self._node_callback
-
-    def node_event_handler(self, node, *args, **kw):
-        '''
-        This method is provided to NodeManager manager upon instansiation
-        and is called through the event library.
-        '''
-        import pdb; pdb.set_trace()  # breakpoint c0622778 //
-        print 'NodeMixin::node_event_handler::', node, args, kw
