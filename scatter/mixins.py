@@ -3,6 +3,7 @@ A collection of generic mixins for Node, Conditions and Machine
 integration
 '''
 from axel import Event
+from compares.const import RUNNING, CLEAR
 
 
 class NameMixin(object):
@@ -69,7 +70,7 @@ class GetSetMixin(object):
         Change an attribute on this node
         '''
         # setattr(self.__dict__, k, v)
-        print 'set', k, v
+        # print 'set', k, v
         self.__dict__[k] = v
         # print 'dict', self.__dict__
         return self.get(k)
@@ -98,7 +99,7 @@ class EventMixin(object):
         If the internal ._event is missing an error will occur.
         '''
         if self._event_handlers is not None:
-            print 'dispatch', name, args[0]
+            # print 'dispatch', name, args[0]
             res = self._event_handlers(name, *args, **kw)
             if res is not None:
                 self.event_result(*res[0])
@@ -108,3 +109,76 @@ class EventMixin(object):
     def event_result(self, flag, result, handler):
         if flag is False:
             raise result
+
+
+class ConditionsMixin(object):
+    '''
+    A Mixin construct to assist in applying and managing conditions.
+    '''
+    _conditions = ()
+
+    def _run_conditions(self, key, current, incoming, node=None):
+        '''
+        run the conditions against the differences of the key in the node
+        old and new.
+        '''
+        cnds = self.conditions()
+
+        if len(cnds) == 0:
+            # No conditions were applied.
+            return True
+
+        validity = {}
+
+        for cnd in cnds:
+            if cnd.state == RUNNING: continue
+            cnd.state = RUNNING
+            v = cnd.match(current, incoming, node, key, parent_node=self)
+            validity[key] = v
+            cnd.state = CLEAR
+
+        vlist = list(set(validity.values()))
+        res = False if len(vlist) > 1 else vlist[0]
+        return res
+
+    def conditions(self):
+        '''
+        Returns a list of conditions to meet.
+        '''
+        if hasattr(self, '_conditions'):
+            if hasattr(self, 'get') and self.get is not None:
+                return self.get('_conditions')
+            else:
+                return self._conditions
+        return ()
+
+from managers import NodeManager, ConditionsManager
+
+class NodeMixin(object):
+    '''
+    Mixin to assist in managing and reading Nodes in a Manager list.
+    '''
+    nodes = None
+
+    def _setup_nodes(self, node_callback=None):
+        '''
+        Setup node handling by creating a reference to the callback
+        and creating a node manager.
+        '''
+        self._node_callback = node_callback or self.node_event_handler
+        self.nodes = NodeManager(self._add_node_event_handler)
+
+    def _add_node_event_handler(self, node):
+        '''
+        Callback for a node being added to the node manager.
+        '''
+        # print 'NodeMixin: Add node::', node.get_name()
+        node._event_handlers += self._node_callback
+
+    def node_event_handler(self, node, *args, **kw):
+        '''
+        This method is provided to NodeManager manager upon instansiation
+        and is called through the event library.
+        '''
+        import pdb; pdb.set_trace()  # breakpoint c0622778 //
+        print 'NodeMixin::node_event_handler::', node, args, kw
