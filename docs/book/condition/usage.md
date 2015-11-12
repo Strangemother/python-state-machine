@@ -1,4 +1,4 @@
-# Condition Usage
+# Using a Condition
 
 A condition is simple enough, it has some values of which are met from the parent call.
 
@@ -43,48 +43,120 @@ c.target
 'CHANGED'
 ```
 
-### Machine implement
+## Basic Usage
 
-A condition is provided to a node. This node will react to the condition met. Condition strings are maintained by the Machine. events from Nodes within the machine are captured by the machine. The event string is checked against all the conditions contained with every node.
-
-When the machine meets a condition matching the event (by simple string pattern) the condition is validated.
-
-If the condition validates it respondes by calling your callback.
+A condition is essentially an `if` statement exising in its own logic state. You can use a `Condition` and its without a `Node` or `Machine`:
 
 ```python
-from conditions import Condition
+>>> import scatter
+>>> c = scatter.Condition()
+>>> c.match(1,1)
+# Match conditions 1 1
+True
+>>> c.match(1,2)
+# Match conditions 1 2
+False
+```
 
-class TestReactNode(Node):
+More advanced Conditions may match more than an exact `1` and `1`. You can provide a `Condition` with a `value` to match.
 
-    def testnode_age(self):
-        print 'test node age has changed'
+A Condition implements an underlying `Compare` class. Lets quickly look at one:
 
-    def conditions(self):
-        return (
-            Condition('OtherTestNode', 'age', 3, self.testnode_age),
+```python
+>>> from scatter.conditions import Positive
+>>> p=Positive()
+>>> p.match(1,0)
+True
+```
+
+Now lets use that basic `Compare` in a `Condition`:
+
+```python
+>>> from scatter import Condition, Node
+>>> c = Condition(attr='foo', value=Condition.POSITIVE)
+>>> n = Node()
+>>> n._conditions = (c,)
+```
+
+Changing foo from a smaller value to a greater value would `_valid` this node.
+
+```python
+n.foo = 1
+n._valid == True
+# True
+```
+
+Now we understand how a `Compare` works, we can use them in our condition
+
+
+## Node Usage
+
+We can set up a condition in a `Node` with minimal effort. In this example we set the condition to match a value:
+
+```python
+from scatter import Node, Condition
+n = Node()
+c = Condition('foo', 1)
+n._conditions = (c,)
+```
+
+When the node attribute `foo` is `1` the condition will fire. Nothing special will happen but you can validate a node
+
+```python
+# Extended from above
+n.foo = 1
+n._valid
+# True
+```
+
+A more useful implementation of a Condition allows callbacks on certain events.
+
+
+#### Callback: Functional
+
+This example shows when the attribute `foo` is created on our Node `n`, the function `foo_created` is called. The `Condition.CREATED` comparison will only fire when a value changes from `None` to _not_ None:
+
+```python
+from scatter import Node, Condition
+
+def foo_created(node, key, new_val, old_val, condition, valids):
+    print 'Key %s created on %s' % (node.get_name(), key)
+
+n = Node()
+c = Condition(foo=Condition.CREATED, valid=foo_created)
+n._conditions = (c, )
+```
+
+
+Changing `foo` will trigger the callback to fire:
+```python
+>>> n.foo=1
+# Key Node created on foo
+```
+
+#### Callback: Class
+
+A basic `Node` is designed to be very flexible. The conditions can run with context of a Node.
+
+The exact setup shown above can be done in a class structure:
+```python
+from scatter import Machine, Node, Condition
+from scatter.compares.const import Const as const
+
+class Test(Node):
+    _conditions = (
+            Condition('foo', const.CREATED, valid='foo_created'),
         )
+
+    def foo_created(self, node, key, new_val, *args, **kw):
+        print 'Foo created on', node.get_name()
+        return True
 ```
 
-This example shows when the value `age` on `OtherTestNode` is `3`, our callback will print it's response. We add our `TestReactNode` to the Machine in order to make it a reality.
+You would run this:
 
 ```python
-m = Machine()
-m.add(TestReactNode())
+n = Test()
+n.foo = 1
+# Key Node created on foo
 ```
-
-
-Adding a test node to make is happen.
-
-```python
-class OtherTestNode(Node):
-    age = 22
-
-n = OtherTestNode()
-m.add(n)
-n.age = 5
-# TestReactNode prints
-'test node age has changed'
-```
-
-That's pretty easy. Simply extend this model to implement a massive reactive chain.
-

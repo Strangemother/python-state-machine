@@ -1,8 +1,8 @@
 # Condition
 
-A condition manages validation of routines though the network.
-A condition is used to monitor change of a value on a node.
-A condition maps to the running node and network dispatching
++ A condition manages validation of routines though the network.
++ A condition is used to monitor change of a value on a node.
++ A condition maps to the running node and network dispatching
 the correct responses to the network manager.
 
 A Condition can monitor a value on a provided node. When the value
