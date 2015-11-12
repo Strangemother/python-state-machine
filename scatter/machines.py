@@ -1,9 +1,8 @@
 from axel import Event
 
-from nodes import NodeMixin
 from managers import NodeManager, ConditionsManager
 from time import time as _time
-from mixins import EventMixin
+from mixins import EventMixin, NodeMixin
 
 
 class MachineBase(object):
@@ -28,7 +27,7 @@ class MachineBase(object):
 
     def __str__(self):
         '''
-        Returns a string version of the node
+        Returns a string version of the machine
         '''
         return '%s "%s"' % (self.__class__.__name__, self.name, )
 
@@ -46,12 +45,13 @@ class EventCoupler(object):
     def _node_event(self, node, *args, **kw):
         '''
         Callback for a node being added to the node manager.
+
+        When the NodeManager was instantiated, this method was provided as
+        the callback to respond to an event dispatched from a node.
         '''
         # hooking from ManagerMachine._add_node_event
-        print 'machine heard node change', str(node), args
-
-        self.node_event(args[0], node, *args, **kw)
-
+        # machine, node, *events, anything else.
+        self.node_event(self, node, *args, **kw)
 
     def _read_conditions(self, node):
         '''
@@ -64,8 +64,6 @@ class EventCoupler(object):
 
     def _add_conditions(self, conditions, node):
         print 'add conditions', conditions, node
-        import pdb; pdb.set_trace()  # breakpoint fcbf1cc3 //
-
         self.conditions.integrate_conditions(conditions, node)
 
 
@@ -75,8 +73,7 @@ class Machine(MachineBase, EventCoupler, NodeMixin, EventMixin):
         '''
         Setup the node manager calling the super once complete.
         '''
-        print '>       setup Conditions'
-        self.conditions = ConditionsManager()
+        # self.conditions = ConditionsManager()
         self._setup_nodes(self._node_event)
         super(Machine, self).setup()
 
@@ -99,15 +96,47 @@ class Machine(MachineBase, EventCoupler, NodeMixin, EventMixin):
         return nodes
 
     def _add_node_event_handler(self, node):
-        print 'machine heard add node event', node
-        cnds = self._read_conditions(node)
-        print 'conditions', cnds
-        self._add_conditions(cnds, node)
+        '''
+        Callback for a node being added to the node manager.
+        '''
+        # cnds = self._read_conditions(node)
+        #print 'conditions', cnds
+        # self._add_conditions(cnds, node)
         return super(Machine, self)._add_node_event_handler(node)
 
-    def node_event(self, name, node, *args, **kw):
+    def node_event(self, machine, node, event, *args, **kw):
+        # machine, node, *events, anything else.
         '''
         This method is provided to NodeManager manager upon instansiation
         and is called through the event library.
         '''
-        print 'Machine::node_event::', name, type(node), str(node)
+        # Iterate other nodes and check statements.
+        if event == 'set':
+            # A name args tuple will have (event, key, value)
+            key = args[0]
+            # Ecisting value
+            current = node.get(key)
+            if current is None:
+                pass
+                # print '--- Key %s is not accessible on %s' % (key, node)
+            # new value.
+            incoming = args[1]
+            # print 'Machine::%s::%s::%s' % (node.get_name(), event, key)
+            # Reacting to a set is the only hardwired functionality.
+            self.node_set_event(key, current, incoming, node)
+
+    def node_set_event(self, key, current, incoming, node=None):
+        '''
+        this method called by self.node_event iterates the set event to the
+        attached nodes.
+        key is the attr on the node in the event context
+        current is the existing value for the node attr
+        incoming is the new value to be assigned to the node attr
+        node is the event node in context.
+        '''
+        for _node in self.nodes:
+            # Don't run the existing node,
+            # only run nodes of matching name
+            if _node is not node: # and node.get_name() == _node.get_name():
+                # print self, 'running conditions on', node, key, incoming
+                _node._run_conditions(key, current, incoming, node)
