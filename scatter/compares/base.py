@@ -77,24 +77,7 @@ class CacheMixin(object):
         return False
 
 
-class Compare(object):
-
-    @staticmethod
-    def args(node, value, field, const):
-        '''
-        return arguments to fit, condition.compare method
-        '''
-        res = [node, value, getattr(node, field), const]
-        return res
-
-    def __init__(self, condition=None):
-        self.condition = condition
-
-    def match(self, a, b):
-        return a == b
-
-
-class CacheCompare(Compare, CacheMixin):
+class CacheCompare(CacheMixin):
     '''
     A cache value is stored to compare against
     '''
