@@ -60,8 +60,7 @@ You can see what happens under-the-hood:
 You can name a node as it's first argument
 
 ```python
->>> nn = scatter.Node('foo')
-# x   Node "Node" Error on _event existence for set
+>>> n = scatter.Node('foo')
 # set _event_handlers <axel.axel.Event object at 0x0000000002C884E0>
 # dispatch set _name
 # set _name foo
@@ -69,7 +68,7 @@ You can name a node as it's first argument
 
 ## Implementation
 
-Because a node is designed to be the extendable part of the API, it has a small set methods:
+Because a node is designed to be the extendable part of the API, it has a small set methods.
 
 Here is a list of attribute names in a node. Unless you `super` override these methods, you'll break the `Node` instance.
 
@@ -85,6 +84,9 @@ Here is a list of attribute names in a node. Unless you `super` override these m
 'get_name',
 'set']
 ```
+
+*This list does omit the basic `__private__` members and attributes inherited from `object`*
+
 
 #### name & and get_name()
 
