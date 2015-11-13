@@ -32,6 +32,7 @@ class TestNameMixin(unittest.TestCase):
         m.get_name()
         self.assertEqual('NameMixin', m.get_name())
 
+
 class TestGetSetMixin(unittest.TestCase):
     def test___getattr__(self):
         gsm = GetSetMixin()
@@ -75,6 +76,7 @@ class TestGetSetMixin(unittest.TestCase):
         get_set_mixin.get.assert_called_with(k)
         self.assertEqual(v, get_set_mixin.__dict__[k])
 
+
 class TestEventMixin(unittest.TestCase):
 
     def test__build_event(self):
@@ -85,6 +87,34 @@ class TestEventMixin(unittest.TestCase):
         event_mixin._build_event()
         eh = event_mixin._event_handlers
         self.assertIsInstance(eh, Event)
+
+    def test__build_event_error(self):
+        '''
+        An error is raised from dispatch if a handler errors.
+        The error type should match the error raised from the handler
+        '''
+        def e_handler(name, *args, **kw):
+            return 0/0
+
+        def f_handler(name, *args, **kw):
+            return bad_ref
+
+        name = 'event_name'
+        args = [1,2,4]
+        # e_handler = MagicMock(return_value=[a])
+        event_mixin = EventMixin()
+        event_mixin._build_event()
+
+        event_mixin._event_handlers += e_handler
+
+        with self.assertRaises(ZeroDivisionError):
+            event_mixin._dispatch(name, *args)
+
+        event_mixin._event_handlers -= e_handler
+        event_mixin._event_handlers += f_handler
+
+        with self.assertRaises(NameError):
+            event_mixin._dispatch(name, *args)
 
     def test__dispatch(self):
         '''
@@ -100,12 +130,27 @@ class TestEventMixin(unittest.TestCase):
 
 
 class TestConditionsMixin(unittest.TestCase):
+
     def test_conditions(self):
         '''
         Returns a tuple
         '''
         conditions_mixin = ConditionsMixin()
         self.assertIsInstance(conditions_mixin.conditions(), tuple)
+
+    def test__run_conditions(self):
+        '''
+        Empty conditions list returns true validity
+        '''
+        conditions_mixin = ConditionsMixin()
+        self.assertTrue(conditions_mixin._run_conditions(1,2,3))
+
+    def test__run_conditions_uses_conditions(self):
+
+        conditions_mixin = ConditionsMixin()
+        conditions_mixin.conditions = MagicMock(return_value=())
+        conditions_mixin._run_conditions(1,2,3)
+        conditions_mixin.conditions.assert_called_with()
 
     def test__conditions(self):
         '''
@@ -115,6 +160,10 @@ class TestConditionsMixin(unittest.TestCase):
         foo = dict()
         conditions_mixin._conditions = foo
         self.assertEqual(conditions_mixin.conditions(), foo)
+
+        conditions_mixin = ConditionsMixin()
+        conditions_mixin._conditions = None
+        self.assertIsInstance(conditions_mixin.conditions(), tuple)
 
 
 if __name__ == '__main__':
