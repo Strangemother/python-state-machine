@@ -4,6 +4,7 @@ integration
 '''
 from axel import Event
 from compares.const import RUNNING, CLEAR
+import sys, traceback
 
 
 class NameMixin(object):
@@ -53,17 +54,11 @@ class GetSetMixin(object):
         '''
         return an attribute from this node
         '''
-        # print 'get', k
-        # self.fetch_get(k)
         try:
             return object.__getattribute__(self, k)
         except AttributeError:
             pass
         return None
-
-        if k in self.__dict__:
-            v = self.__dict__[k]
-            return v
 
     def set(self, k, v):
         '''
@@ -107,7 +102,14 @@ class EventMixin(object):
             print 'x  ', self, "Error on _event existence for", name
 
     def event_result(self, flag, result, handler):
+
         if flag is False:
+            # import traceback
+            # import cgitb
+            # import sys
+            # t, v, tb = sys.exc_info()
+            # cgitb.enable(format='text')
+            # import pdb; pdb.set_trace()  # breakpoint e6e8ef60 //
             raise result
 
 
@@ -133,7 +135,19 @@ class ConditionsMixin(object):
         for cnd in cnds:
             if cnd.state == RUNNING: continue
             cnd.state = RUNNING
-            v = cnd.match(current, incoming, node, key, parent_node=self)
+
+            try:
+                v = cnd.match(current, incoming, node, key, parent_node=self)
+            except Exception as exc:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                formatted_lines = traceback.format_exc().splitlines()
+                # print formatted_lines
+                print '\nError: {0}({2}) on {1}'.format(exc_type.__name__, self, exc_value)
+                print '\n'.join(formatted_lines)
+                # print '\n'.join(traceback.format_tb(exc_traceback))
+
+                # raise exc
+                v = False
             validity[key] = v
             cnd.state = CLEAR
 
@@ -145,7 +159,7 @@ class ConditionsMixin(object):
         '''
         Returns a list of conditions to meet.
         '''
-        if hasattr(self, '_conditions'):
+        if hasattr(self, '_conditions') and getattr(self, '_conditions') is not None:
             if hasattr(self, 'get') and self.get is not None:
                 return self.get('_conditions')
             else:
