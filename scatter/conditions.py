@@ -1,253 +1,13 @@
 '''
 A condition
 '''
-from compare import ComparisonMixin
 from compares.const import register_compare, Const as const
-
-
-class Valid(ComparisonMixin):
-    '''
-    validity statement for a local node.
-
-        >>> v=scatter.conditions.Valid(1)
-        >>> v.match(3)
-        False
-        >>> v.match(1)
-        True
-
-    '''
-    def __init__(self, value=None):
-        # Value to match on call
-        self.value = value
-
-    def match(self, a, b=None, **kw):
-        '''
-        Match the value with the internal value.
-        (b) value can be passed if self.value is None or
-        to override
-        '''
-        b = b or self.value
-        return (a == b)
-
-
-class Compare(Valid):
-
-    @staticmethod
-    def args(node, value, field, const):
-        '''
-        return arguments to fit, condition.compare method
-        '''
-        res = [node, value, getattr(node, field), const]
-        return res
-
-    def __init__(self, condition=None):
-        self.condition = condition
-
-
-class Exact(Compare):
-    '''
-    check if a and b are exact
-    '''
-    def match(self, a, b, **kw):
-        if a == b:
-            return True
-        return False
-
-class Created(Compare):
-    '''
-    Match a as not None and b as None
-    '''
-    def match(self, a, b, **kw):
-        return (a is not None) and (b is None)
-
-class Changed(Compare):
-
-    def match(self, a, b, **kw):
-        # print 'Condition Changed', a,b
-        if a != b:
-            return True
-        return False
-
-
-class Positive(Compare):
-    '''
-    Determin if a as changes in a positive direction to b
-    Cannot compare string
-
-    Boolean:
-
-    False > True  > True
-    True > True   > True
-    False > False > False
-    True > False  > False
-
-    Int/Float
-
-    0 > + > True
-    0 > - > False
-    0 > 0 > False
-
-    This active compare will compare against it's last stored cache.
-    Each time the compare is called, the value is stored for the
-    next procedure to inspect
-    '''
-
-    def match_num(self, a, b):
-        if a > b:
-            r = True
-        else:
-            r = False
-        # print 'Positive matching a, b', a, b, '==', r
-        return r
-
-    def match_bool(self, a, b):
-        if a is False and b is True: return True
-        if a is True and b is True: return True
-        return False
-
-    def match_str(self, a, b):
-        return False
-
-    def match(self, a, b, **kw):
-        if type(a) == bool: v = self.match_bool(a,b)
-        if type(a) in (unicode, str,): v = self.match_str(a, b)
-        if type(a) in (int, float): v = self.match_num(a, b)
-        return v
-
-
-class Negative(Positive):
-
-    def match_num(self, a, b):
-        v = super(Negative, self).match_num(a,b)
-        return (not v)
-
-    def match_bool(self, a, b):
-        v = super(Negative, self).match_bool(a,b)
-        return (not v)
-
-
-register_compare(Created, Changed, Positive, Negative)
-
-
-class CCondition(object):
-    '''
-    A condition perpetuates changes of an object base upon
-    rules applied at configuration.
-    '''
-
-    def __init__(self, attr=None, value=None, valid=None, node=None, name=None, **kw):
-        '''
-        A condition requires
-        a node (Node|String|iterable),
-        the attribute to monitor (String),
-        a value to validate condition.
-
-        Optionally `valid` callback when the condition is met
-
-        You can add keyword args to provide additional validations to the condition.
-        '''
-
-        # the node to watch for changes.
-        self.node = node
-        # Attrbibute to monitor on node.
-        self.attr = attr
-        # Assign the constant type to match - or the target value to validate to.
-        self.value = value
-        # A def callback - if any
-        self._valid_cb = valid
-        self.name = name
-
-    def valid(self, value=None):
-        return self.match(value, self.value, self.node, self.attr)
-
-    def match(self, current, incoming, node=None, key=None, **kw):
-        '''
-        this method provides a simpler access to the conditions without the
-        validation of a node. Pass current, incoming to internally validate this
-        condition against its setup.
-        '''
-        ctype = const.EXACT
-
-        if isinstance(self.value, (tuple,)):
-            # Simple extraction of the target compare class.
-            ctype = self.value[1]
-
-        if isinstance(ctype, (tuple,)):
-            ctype = ctype[1]
-
-        return self.compare(node, current, incoming, ctype, self.value)
-
-    def validate(self, parent_node, node, value, field):
-        '''
-        Validate the condition against a node and it's value.
-        The self.watch should match the node, self.field matches
-        member field and value should match your target.
-
-        This does not consider dynamically generated Conditions, but the
-        values passed should assist in matching attributes dynamically.
-        '''
-        # Checking from the node early, the value will
-        # not be set yet
-        # v = getattr(node, self.field)
-        # print 'Condition validate', value, self.value
-        #match = node.get_name() == self.watch and \
-        #        field == self.field and \
-        #        value == self.value
-
-        # if match:
-        if isinstance(self.value, (tuple,)):
-            # get the compaison class using the Const tuple flag; defined
-            # upon user instance 'value' to match
-            klass = self.get_comparison_class(self.value[1])
-            # Apply the required arguments to fit the compare method.
-            args = klass.args(node, value, field, self.value)
-            # Perform the compare with class from scatter.compares.simple
-            c = self.compare(*args)
-        else:
-            c = self.compare(node, value, self.value)
-
-        # call the bacllback if the value validates
-        if c is True and self._valid_cb:
-            self._call_handler(parent_node, node, value, field)
-            return c
-        return False
-
-    def _call_handler(self, parent_node, node, value, field):
-        '''
-        Call the handler with the node, value and field passed.
-        If the handler is a string the method is received from the parent_node
-        and called.
-        '''
-        v = self._valid_cb
-        cb = v
-        if isinstance(v, (str, unicode,)):
-            cb = getattr(parent_node, v)
-        cb(node, value, field)
-
-    def __str__(self):
-        t = self.value
-
-        if isinstance(t, (list, tuple)):
-            t = hash(self.value)
-
-        s = '{0}_{1}_{2}'.format(self.node, self.attr, t)
-        return s
-
-    def __unicode__(self):
-        return u'%s' % self.__str__()
-
-    def __repr__(self):
-        s = self.name if self.name is not None else self.__str__()
-        return '<Condition: %s>' % (s,)
-
-
+from compares.simple import Exact
 from collections import OrderedDict
 from inspect import isclass, ismethod
 
 
 calldict = {}
-
-
 class Stack(const):
 
     def stack_add(self, cb, cbargs):
@@ -306,7 +66,11 @@ class Stack(const):
         # Rerun undone
 
 
-class DCondition(Stack):
+class Condition(Stack):
+    '''
+    A condition perpetuates changes of an object base upon
+    rules applied at configuration.
+    '''
 
     state = None
 
@@ -520,14 +284,31 @@ class DCondition(Stack):
         Return the compare class by string
         '''
 
-        # m = __import__('scatter.compares.simple', fromlist=[compare])
-        m = globals()
+        m = __import__('scatter.compares.simple', fromlist=[compare])
+        # m = globals()
         # print 'module', m
 
-        # k = getattr(m, compare)
-        k = m[compare]
+        k = getattr(m, compare)
+        # k = m[compare]
 
         return k
 
+    def valid(self, value=None):
+        return self.match(value, self.value, self.node, self.attr)
 
-Condition = DCondition
+    def __str__(self):
+        t = self._value
+
+        if isinstance(t, (list, tuple)):
+            t = self._value[1]
+
+        s = '{1}:{2}'.format(self.node, self._attr, t)
+        return s
+
+    def __unicode__(self):
+        return u'%s' % self.__str__()
+
+    def __repr__(self):
+        s = self.name if self.name is not None else self.__str__()
+        return '<Condition: %s>' % (s,)
+
