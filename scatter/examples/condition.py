@@ -20,12 +20,14 @@ class TestNode(Node):
     def color_changed(self, node, key, new_val, old_val, condition, valids):
         print 'Color changed from {0} to {1}'.format(old_val, new_val)
 
+
 def run():
     ma = Machine('example')
     n = TestNode()
     ma.nodes.add(n)
     n.color = 'blue'
     return ma
+
 
 def main():
     global g

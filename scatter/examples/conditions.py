@@ -21,31 +21,42 @@ To test this, change a 'TestNode' to a 'Node'. the callback will fire once per
 from scatter import Machine, Node, Condition
 
 
-cond = Condition('color', Condition.CHANGED, 'color_changed')
-
-
-class TestNode(Node):
-    color = 'red'
+class BNode(Node):
 
     _conditions = (
-            cond,
+            Condition('color', Condition.CHANGED, 'color_changed', node='BNode'),
         )
 
     def color_changed(self, node, key, new_val, old_val, condition, valids):
-        '''
-        color changed condition handler. Will fire when any node.color alters.
-        '''
-        s = '{0} heard "{1}" on {2} from {3} to {4}'
-        sargs = [self, key, node, old_val, new_val]
-        print s.format(*sargs)
+        print 'B heard A color change', new_val
+
+
+class ANode(Node):
+    _conditions = (
+            Condition('color', Condition.CHANGED, 'color_changed', node='ANode'),
+        )
+
+    def color_changed(self, node, key, new_val, old_val, condition, valids):
+        print 'A Heard B color change', new_val
+
+
+class CNode(Node):
+    _conditions = (
+            Condition('color', Condition.CHANGED, 'color_changed', node='ANode'),
+        )
+
+    def color_changed(self, node, key, new_val, old_val, condition, valids):
+        print 'C Heard color change on', node
 
 
 def run():
     ma = Machine('example')
-    n = TestNode('Cake')
-    n2 = TestNode('Dave')
-    ma.nodes.add(n, n2)
-    n.color = 'blue'
+    a = ANode()
+    b = BNode()
+    c = CNode()
+    ma.nodes.add(a, b, c)
+    a.color = 'red'
+    b.color = 'blue'
     return ma
 
 
