@@ -97,11 +97,11 @@ class EventMixin(object):
             # print 'dispatch', name, args[0]
             res = self._event_handlers(name, *args, **kw)
             if res is not None:
-                self.event_result(*res[0])
-        else:
-            print 'x  ', self, "Error on _event existence for", name
+                self._event_result(*res[0])
+        # else
+            # print 'x  ', self, "Error on _event existence for", name
 
-    def event_result(self, flag, result, handler):
+    def _event_result(self, flag, result, handler):
 
         if flag is False:
             # import traceback
@@ -152,7 +152,9 @@ class ConditionsMixin(object):
             cnd.state = CLEAR
 
         vlist = list(set(validity.values()))
-        res = False if len(vlist) > 1 else vlist[0]
+
+        _vv = vlist[0] if len(vlist) > 0 else False
+        res = False if len(vlist) > 1 else _vv
         return res
 
     def conditions(self):
@@ -166,33 +168,33 @@ class ConditionsMixin(object):
                 return self._conditions
         return ()
 
-from managers import NodeManager, ConditionsManager
+# from managers import NodeManager, ConditionsManager
 
-class NodeMixin(object):
+
+class ManagerMixin(object):
     '''
     Mixin to assist in managing and reading Nodes in a Manager list.
     '''
     nodes = None
 
-    def _setup_nodes(self, node_callback=None):
+    def make_manager(self, Manager_class, callback=None):
         '''
-        Setup node handling by creating a reference to the callback
-        and creating a node manager.
+        Setup item handling by creating a reference to the callback
+        and creating a item manager.
         '''
-        self._node_callback = node_callback or self.node_event_handler
-        self.nodes = NodeManager(self._add_node_event_handler)
+        self._callback = callback or self._event_handler
+        return Manager_class(self._add_event_handler)
 
-    def _add_node_event_handler(self, node):
+    def _add_event_handler(self, item):
         '''
-        Callback for a node being added to the node manager.
+        Callback for an item being added to the manager.
         '''
-        # print 'NodeMixin: Add node::', node.get_name()
-        node._event_handlers += self._node_callback
+        # print 'NodeMixin: Add item::', item.get_name()
+        item._event_handlers += self._callback
 
-    def node_event_handler(self, node, *args, **kw):
+    def _event_handler(self, node, *args, **kw):
         '''
-        This method is provided to NodeManager manager upon instansiation
+        This method is provided to Manager manager upon instansiation
         and is called through the event library.
         '''
-        import pdb; pdb.set_trace()  # breakpoint c0622778 //
-        print 'NodeMixin::node_event_handler::', node, args, kw
+        print 'ManagerMixin::_event_handler::', node, args, kw
