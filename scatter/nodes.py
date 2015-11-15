@@ -8,7 +8,7 @@ A node is a very simple object designed to be lightweight for maximum
 pliability. The Machine handles the heavy load.
 '''
 from mixins import GetSetMixin, NameMixin, EventMixin, ConditionsMixin
-from managers import NodeManager
+from async import EventClock
 
 
 class Node(NameMixin, ConditionsMixin, GetSetMixin, EventMixin):
@@ -35,3 +35,41 @@ class Node(NameMixin, ConditionsMixin, GetSetMixin, EventMixin):
         super(Node, self).set(k, v)
         super(Node, self).set('_valid', valid)
 
+
+_v = 0
+
+from scatter.weak import _weaks, add_weak,get_weak
+from multiprocessing import Manager
+
+clock = None
+
+class ClockNode(Node):
+
+    ticks = 0
+
+    def __init__(self, name=None):
+        global clock
+        clock = self
+        ref = add_weak(self, 'callback', self.clock_tick)
+        self.clock = EventClock(callback=func_caller, v=ref)
+        #self.clock.callbacks += self.clock_tick
+        super(ClockNode, self).__init__(name)
+
+    def start(self):
+        self.clock.start()
+
+    def stop(self):
+        self.clock.stop()
+
+    def clock_tick(self, clock, ticks):
+        print 'node tick', ticks
+        self.ticks = ticks
+
+
+def func_caller(*args):
+    global clock
+
+    _v = args[0]
+    cb = get_weak(key=_v)
+    print _v, cb, clock
+    return 2
