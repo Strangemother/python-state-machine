@@ -8,6 +8,7 @@ from inspect import isclass, ismethod
 
 
 calldict = {}
+
 class Stack(const):
 
     def stack_add(self, cb, cbargs):
@@ -50,7 +51,7 @@ class Stack(const):
             # cb(args)
             for func_id in func_set:
                 caller = func_set[func_id]
-                print 'calling missing', caller[0]
+                print 'calling from stack', caller[0]
                 caller[0](*caller[1])
             else:
                 print 'No skipped results'
@@ -67,16 +68,13 @@ class Stack(const):
 
 
 class Condition(Stack):
-    '''
-    A condition perpetuates changes of an object base upon
-    rules applied at configuration.
-    '''
+    ''' A condition perpetuates changes of an object base upon
+    rules applied at configuration. '''
 
     state = None
 
     def __init__(self, attr=None, value=None, valid=None, node=None, name=None, **kw):
-        '''
-        A condition requires
+        ''' A condition requires
         a node (Node|String|iterable),
         the attribute to monitor (String),
         a value to validate condition.
@@ -101,10 +99,8 @@ class Condition(Stack):
         self.name = name
         self.read_args(**kw)
 
-
     def read_args(self, **kw):
-        '''
-        provide keyword arguments for the condition to match.
+        '''provide keyword arguments for the condition to match.
         The value of a keyword may be a primitive python object or a Compare.
         '''
         attr = self._attr
@@ -115,16 +111,13 @@ class Condition(Stack):
             self.store_statement(key, kw[key])
 
     def store_statement(self, key, value):
-        '''
-        Store a statement into the condition to be met when the condition is
-        run
-        '''
+        ''' Store a statement into the condition to be met when the condition
+        is run '''
         self._keys.update({key: value})
         return self._keys
 
     def match(self, current, incoming, node, key, expand=False, parent_node=None):
-        '''
-        This method is to be used outside the reference scope. Called by
+        ''' This method is to be used outside the reference scope. Called by
         a node alteration or a machine call, the match() method will
         return a validation based upon provided values and the internal
         self.value statements.
@@ -148,8 +141,7 @@ class Condition(Stack):
             for changes, it passes a reference to the matcher.
             This allows string references within the condition to be dynamic
 
-        returned is a boolean value of validity.
-        '''
+        returned is a boolean value of validity. '''
         if key not in self._keys.keys():
             return self._last
 
@@ -173,11 +165,9 @@ class Condition(Stack):
         return self._last
 
     def _call_handler(self, node, valids, key, incoming, current, parent_node=None):
-        '''
-        Call the handler with the node, value and field passed.
+        ''' Call the handler with the node, value and field passed.
         If the self._valid_cb is a string the method is received from the node
-        and called.
-        '''
+        and called. '''
         cbn = self._valid_cb
         cb = cbn
         parent = parent_node or node
@@ -193,11 +183,10 @@ class Condition(Stack):
         cbv = cb(node, key, incoming, current, self, valids)
         # Successful will fire
         self.stack_remove(_id)
-        self.stack_call()
+        # self.stack_call()
 
     def run_statements(self, node, key, current, incoming):
-        '''
-        Iterate the statements collecting boolean values.
+        ''' Iterate the statements collecting boolean values.
         Returned is a a bool of validity.
         Pass expand=True to return an object of key values. Each key is
         an attr of the node with its boolean return.
@@ -206,8 +195,7 @@ class Condition(Stack):
             This is syntax sugar and probably not required.
         key is the attr within the node
         current is the existing value within the node[key]
-        incoming is the future value the node[key] will become after validity
-        '''
+        incoming is the future value the node[key] will become after validity'''
 
         valids = {}
 
@@ -225,8 +213,7 @@ class Condition(Stack):
         return valids
 
     def check_statement(self, node, key, value, current, incoming):
-        '''
-        check_statement returns boolean of the key, value passed.
+        ''' check_statement returns boolean of the key, value passed.
 
         The node is the element to check the condition statement against.
         The key is the attr within the node of which will change to the value.
@@ -240,8 +227,7 @@ class Condition(Stack):
 
         it's most likely to check the incoming value rather than the current.
         The condition is pre checked ensuring any later nodes within a chain
-        denotes this conditions validity.
-        '''
+        denotes this conditions validity. '''
 
         # print 'Checking condition against node', self.node, ' input:', node
         if self.node is not None:
@@ -283,14 +269,8 @@ class Condition(Stack):
         '''
         Return the compare class by string
         '''
-
         m = __import__('scatter.compares.simple', fromlist=[compare])
-        # m = globals()
-        # print 'module', m
-
         k = getattr(m, compare)
-        # k = m[compare]
-
         return k
 
     def valid(self, value=None):
@@ -311,4 +291,3 @@ class Condition(Stack):
     def __repr__(self):
         s = self.name if self.name is not None else self.__str__()
         return '<Condition: %s>' % (s,)
-
