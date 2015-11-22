@@ -65,3 +65,4 @@ scratch/crypto/alpha.py
 scratch/crypto/unicode.py
 vernam.py
 *.pickle
+_sftp-config.json
