@@ -42,7 +42,6 @@ class MachineBase(object):
         return '<machine.Machine:{cls_name}("{name}")>'.format(**kw)
 
 
-
 class MachineNodeIntegration(MachineBase):
     nodes = None
 

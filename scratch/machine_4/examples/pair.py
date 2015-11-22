@@ -19,6 +19,7 @@ class TestNode(Node):
             C('TestReactNode', 'heard_delta', True, self.heard_delta),
         )
 
+
 class TestReactNode(Node):
     heard_delta = False
 

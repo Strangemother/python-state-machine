@@ -1,6 +1,6 @@
 # Network resolutions
 
-Netwokring machines involves the remote connection to a dispatch layer. A machine hears an event from a node. Dependant upon implementation the machine should propograte this event and its values to a list of connected machines or proxy machines.
+Networking machines involves the remote connection to a dispatch layer. A machine hears an event from a node. Dependant upon implementation the machine should propograte this event and its values to a list of connected machines or proxy machines.
 
 The connections should be adhoc. By providing an address string to a machine should result in a transparent connection and an event chain reaction.
 

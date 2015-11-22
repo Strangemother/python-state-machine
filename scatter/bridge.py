@@ -1,65 +1,28 @@
-from axel import Event
-from tools import color_print as cl
-from address import Address
-from proxy import ProxyMachine
+from time import time as _time
 
 
-class Bridge(object):
+class MethodPointer(object):
     '''
-    A bridge is served by your running machine and called by
-    remote procedure.
+    A ping/pong calling strategy. Call the
+    pointer method of which returns a string
+    of a second method.
+
+        MethodPointer().ping()
+        # foo
+        MethodPointer().foo(*args)
+        # result
+
+    This class is used for bridging network
+    requests. The ping method is used to
+    chack for alive. The ping() method can
+    return a result for an 'info' method.
+
+    This will save on method names and is handy
+    for remote heartbeats on agnostic network nodes.
     '''
 
-    def __init__(self, machine):
-        self.machine = machine
-
-    def get_name(self):
-        '''
-        return the name from this
-        bridge machine instance.
-        '''
-        print 'bridge get_name'
-        return self.machine.name
-
-    def set(self, node_name, key, value):
-        print 'Bridge set', node_name, key, value
-        self.machine.set_on_node(node_name, key, value)
-        return True
-
-    def get_nodes(self, name=None):
-        print 'Fetch from bridge::', name
-        r = []
-        for node in self.machine.get_nodes(name):
-            print 'found node', node
-            t = 'node'
-            s = '%s.%s.%s' % (t, self.machine.name, node.get_name(), )
-            r.append(str(Address(s)))
-        return r
-
-    def add_peer(self, uri):
-        print 'Bridge adding peer', uri
-        self.machine.add_peer(uri)
-        return (uri in peers)
-
-    def ping(self):
-        '''
-        Return useful (cheap) pointer to the member associating
-        machine information.
-        '''
-        print '!Pong.'
-        return 'info'
-
-    def info(self):
-        '''
-        Return information about this runnning machine instance.
-        '''
-        n = self.machine.name
-        st = self.machine._start_time
-        print 'someone asked for information'
-        return {
-            'name': n,
-            'start_time': st,
-        }
+    def __init__(self):
+        self._start_time = int(_time())
 
     def call(self, method_name, *args, **kw):
         '''
@@ -71,6 +34,9 @@ class Bridge(object):
             return m(*args, **kw)
         return False
 
+    def __getitem__(self, name):
+        return getattr(self, name)
+
     def keys(self):
         '''
         Return a list of keys available on this bridge
@@ -79,71 +45,60 @@ class Bridge(object):
         l = [x if x.startswith('_') is False else None for x in cdir]
         return filter(None, l)
 
-
-class Peers(list):
-
-    def __init__(self, machine):
-        self.machine = machine
-        self._created = False
-        self._resolved_peers = {};
-
-    def add_string(self, address_string):
+    def ping(self):
         '''
-        Add a peer to the set first casting a string into a machine type
+        Simple ping method. Returning a pointer to
+        a greater method.
         '''
-        machine = ProxyMachine(address_string)
-        self.add(machine)
-        return machine
+        return 'info'
 
-    def add(self, machine):
-        '''
-        Add the string to the peers and resolve
-        '''
-        self.append(machine)
-        self.resolve(machine)
-        return machine
+    def info(self):
+        return 'ping'
 
-    def get_resolved(self):
-        peers = self.resolve_peers().values()
-        return peers
 
-    def resolve(self, peer=None):
-        '''
-        Resolve all peers in list of which are not resolved.
-        If a peer string is not passed all unresolved peers are
-        resolved.
-        '''
-        if peer is not None:
-            self.resolve_peer(peer)
-        else:
-            self.resolve_peers()
+class Bridge(MethodPointer):
+    '''
+    A Bridge is presented on the network for other Machines to call. 
+    The RPC layer will expose an instance of this class as methods
+    to call. 
+    All methods are relative to the host Machine. 
+    '''
+    parent = None
 
-    def resolve_peer(self, machine):
-        '''
-        Connect and resolve the peer object. returning a machine
-        type.
-        '''
-        return self.connect(machine)
+    def __init__(self, parent=None):
+        if parent:
+            self.parent = parent
+        super(Bridge, self).__init__()
 
-    def connect(self, machine):
-        print 'connect', machine
+    def foo(self):
+        print 'foo'
 
-    def resolve_peers(self):
+    def name(self):
+        return self.parent.name
+
+    def add_peer(self, name, uri):
+        print 'received peer', name, uri
+        self.parent.add(name, uri)
+        return True
+
+    def peers(self):
         '''
-        Resolve all peers in self.peers of which are not connected
-        All peers not resolved will call self.connect returning a
-        machine type.
+        return a list of peers assigned to this bridge.
         '''
+        return self.parent.connections
 
-        for addr in self:
-            # already resolved peers have an associate
-            _p = self._resolved_peers.get(addr)
-            if _p is None:
-                # perform a connection
-                self._resolved_peers[addr] = self.connect(addr)
-        return self._resolved_peers
+    def info(self):
+        '''
+        Return information about this runnning machine instance.
+        '''
+        n = self.parent.name
+        st = self._start_time
+        print 'someone asked for information'
+        return {
+            'name': n,
+            'start_time': st,
+        }
 
-    def add_peer(self, string):
-        self._bridged = True
-        self.append(string)
-        self.resolve_peers()
+    def node_event(self, event, *args, **kw):
+        return self.parent.node_event(event, *args, **kw)
+

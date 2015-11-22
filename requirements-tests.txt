@@ -1,0 +1,3 @@
+coverage==4.0
+pythoscope==0.4.3
+Sphinx==1.3.1
