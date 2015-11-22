@@ -1,6 +1,7 @@
 from axel import Event
 from managers import NodeManager
 from mixins import ManagerMixin
+from adapters import PyroAdapter
 
 
 class Machine(ManagerMixin):
@@ -9,8 +10,13 @@ class Machine(ManagerMixin):
 
     def __init__(self, name=None):
         '''sets the name and calls the setup() method'''
-        self.name = name
+        if name is not None:
+            self.name = name
         self.setup()
+        self.adapter = PyroAdapter(self.name, self)
+
+    def wait(self):
+        self.adapter.wait()
 
     def setup(self):
         ''' Setup the node manager calling the super once complete.
@@ -33,10 +39,18 @@ class Machine(ManagerMixin):
         if event == 'set':
             # A name args tuple will have (event, key, value)
             key = args[0]
+            print 'args', machine, node, args, kw
             current = node.get(key)
             incoming = args[1]
             # Reacting to a set is the only hardwired functionality.
             self.node_set_event(key, current, incoming, node)
+
+        kw = {
+            'node': node.get_name(),
+            'machine': self.name,
+        }
+
+        self.send('node_event', event, key, current, incoming, **kw)
 
     def node_set_event(self, key, current, incoming, node=None):
         ''' this method called by self.node_event iterates the set event to the
@@ -46,9 +60,16 @@ class Machine(ManagerMixin):
         incoming is the new value to be assigned to the node attr
         node is the event node in context. '''
         # Don't run the existing node,
+
         for n in self.nodes:
             if n is not node:# and node.get_name() == _node.get_name():
-                n._run_conditions(key, current, incoming, node)
+                n._run_conditions(key, current, incoming, node=node)
+
+    def send(self, event, *args, **kw):
+        '''
+        Send the value through the adapter
+        '''
+        self.adapter.send(event, *args, **kw)
 
     def __str__(self):
         ''' Returns a string version of the machine '''
