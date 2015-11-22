@@ -69,7 +69,11 @@ class Stack(const):
 
 class Condition(Stack):
     ''' A condition perpetuates changes of an object base upon
-    rules applied at configuration. '''
+    rules applied at configuration.
+
+        Condition('foo', Condition.CHANGED, 'foo_changed')
+        Condition('bar', 2, foo_callback, node='ANode')
+    '''
 
     state = None
 
