@@ -120,7 +120,7 @@ class Condition(Stack):
         self._keys.update({key: value})
         return self._keys
 
-    def match(self, current, incoming, node, key, expand=False, parent_node=None):
+    def match(self, current, incoming, node, key, expand=False, parent_node=None, **kw):
         ''' This method is to be used outside the reference scope. Called by
         a node alteration or a machine call, the match() method will
         return a validation based upon provided values and the internal
@@ -149,7 +149,7 @@ class Condition(Stack):
         if key not in self._keys.keys():
             return self._last
 
-        valids = self.run_statements(node, key, current, incoming)
+        valids = self.run_statements(node, key, current, incoming, **kw)
 
 
         # flatten the dict in to a set of True/False
@@ -160,7 +160,7 @@ class Condition(Stack):
             return False
 
         if vlist[0] is True:
-            self._call_handler(node, valids, key, incoming, current, parent_node)
+            self._call_handler(node, valids, key, incoming, current, parent_node, **kw)
 
         if expand:
             return valids
@@ -168,7 +168,7 @@ class Condition(Stack):
         self._last = vlist[0]
         return self._last
 
-    def _call_handler(self, node, valids, key, incoming, current, parent_node=None):
+    def _call_handler(self, node, valids, key, incoming, current, parent_node=None, **kw):
         ''' Call the handler with the node, value and field passed.
         If the self._valid_cb is a string the method is received from the node
         and called. '''
@@ -184,12 +184,12 @@ class Condition(Stack):
 
         _id = self.stack_add(cb, [node, key, incoming, current, valids])
         # Will fire
-        cbv = cb(node, key, incoming, current, self, valids)
+        cbv = cb(node, key, incoming, current, self, valids, **kw)
         # Successful will fire
         self.stack_remove(_id)
         # self.stack_call()
 
-    def run_statements(self, node, key, current, incoming):
+    def run_statements(self, node, key, current, incoming, **kw):
         ''' Iterate the statements collecting boolean values.
         Returned is a a bool of validity.
         Pass expand=True to return an object of key values. Each key is
@@ -206,7 +206,7 @@ class Condition(Stack):
         for _key in self._keys:
             if _key == key:
                 value = self._keys[_key]
-                res = self.check_statement(node, _key, value, current, incoming)
+                res = self.check_statement(node, _key, value, current, incoming, **kw)
                 self.valid_cache[_key] = res
                 valids[_key] = res
             else:
@@ -216,7 +216,7 @@ class Condition(Stack):
                 valids[_key] = self.valid_cache.get(_key, False)
         return valids
 
-    def check_statement(self, node, key, value, current, incoming):
+    def check_statement(self, node, key, value, current, incoming, **kw):
         ''' check_statement returns boolean of the key, value passed.
 
         The node is the element to check the condition statement against.
