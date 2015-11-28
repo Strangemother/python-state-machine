@@ -32,6 +32,9 @@ class NameMixin(object):
             return self.__get_class().__name__
         return self._name
 
+    def _set_name(self, name):
+        self._name = name
+
     def __str__(self):
         c = self.get_name()
         return str('Node "{0}"'.format(c))
@@ -46,6 +49,8 @@ class NameMixin(object):
         }
 
         return '<{module}:{cls_name}("{name}")>'.format(**kw)
+
+    name = property(get_name, _set_name)
 
 
 class GetSetMixin(object):
@@ -119,7 +124,7 @@ class ConditionsMixin(object):
     '''
     _conditions = ()
 
-    def _run_conditions(self, key, current, incoming, node=None):
+    def _run_conditions(self, key, current, incoming, node=None, machine=None):
         '''
         run the conditions against the differences of the key in the node
         old and new.
@@ -137,7 +142,7 @@ class ConditionsMixin(object):
             cnd.state = RUNNING
 
             try:
-                v = cnd.match(current, incoming, node, key, parent_node=self)
+                v = cnd.match(current, incoming, node, key, parent_node=self, machine=machine)
             except Exception as exc:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 formatted_lines = traceback.format_exc().splitlines()
