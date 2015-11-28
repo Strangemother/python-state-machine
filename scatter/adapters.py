@@ -26,20 +26,6 @@ class BaseAdapter(object):
         return name
         # Cache by any ref
 
-    def fetch(self, key):
-        '''
-        Fetch a value from the remotes
-        '''
-        print 'fetch', key, 'from remote'
-        connections = self.connections
-        res = {}
-        for name in connections:
-            bridge = self._objects[name]
-            if bridge is None:
-                continue
-            res[name] = bridge.call(key)
-        return res
-
     def send(self, key, *args, **kw):
         '''
         Send a call to the remote connections for method key, passing
@@ -90,12 +76,11 @@ class BaseAdapter(object):
         originator_node = kw.get('node', None)
         if 'node' in kw:
             del kw['node']
-        if 'machine' in kw:
-            del kw['machine']
+        # if 'machine' in kw:
+        #     del kw['machine']
 
         if event == 'set':
             self.item.node_set_event(args[0], args[1], args[2], node=originator_node)
-        #self.item.node_event(originator, originator_node, event, *args, **kw)
 
     def __getitem__(self, name):
         return getattr(self.bridge, name)
@@ -105,19 +90,32 @@ class BaseAdapter(object):
         Calling an adapter in a functional way returns the bridge
         '''
         if hasattr(self.bridge, name):
-            return self.bridge[name]
+            return getattr(self.bridge, name)
         return None
 
 
 class PyroAdapter(BaseAdapter):
+    '''
+    A PyroAdapter uses Pyro4 to dispatch events throguh
+    a peer network. A daemon is setup and
+    an RPC object is exposed.
+    '''
 
     def __init__(self, name, item=None, bridge=None):
+        '''
+        Pass through for the BaseAdapter, setting None for future
+        values _daemon and uri
+        '''
         self._daemon = None
         self.uri = None
         self._objects = {}
         super(PyroAdapter, self).__init__(name, item, bridge)
 
     def setup(self):
+        '''
+        Perform a setup of the Pyro4 library. Copy attributes as config
+        from .config to Pyro4.config
+        '''
         import config as _c
         _k = [x if x.startswith('__') is False else None for x in dir(_c)]
         keys = filter(None, _k)
@@ -125,17 +123,32 @@ class PyroAdapter(BaseAdapter):
             setattr(Pyro4.config, name, getattr(_c, name))
 
     def daemon(self):
+        '''
+        Return an instance of the daemon Pyro4 uses to communicate through.
+        If self._daemon is None a new Pyro4.Daemon is created.
+        self.setup() is called before the Daemon is created.
+        Returned is an instance of the daemon.
+        '''
         if self._daemon is None:
             self.setup()
             self._daemon = Pyro4.Daemon()
         return self._daemon
 
     def register(self, item):
+        '''
+        Register the item using Pyro4 daemon register. returned is the
+        Pyro4 register object (a URI)
+        '''
         if self._daemon is None:
             self.daemon()
         return self._daemon.register(item)
 
     def get_nameserver(self):
+        '''
+        Use Pyro4 to locate and return the nameserver.
+        If the daemon does not exist self.setup() will be called.
+        Returned is an instance of the Pyro4 Nameserver or None.
+        '''
         if self._daemon is None:
             self.setup()
         try:
@@ -145,6 +158,10 @@ class PyroAdapter(BaseAdapter):
             return None
 
     def get_object(self, uri):
+        '''
+        Resolve a Pyro4 uri object to a Pyro4.Proxy object.
+        returned is a proxy object (a remote Bridge instance)
+        '''
         o = Pyro4.Proxy(uri)
         return o
 
@@ -169,3 +186,12 @@ class PyroAdapter(BaseAdapter):
         uri = self.get_uri(bridge)
         print 'Wait on', uri
         self.daemon().requestLoop()
+
+
+class AdapterMixin(object):
+    '''
+    Easy handler of the adapter
+    '''
+    def make_adapter(self, name=None, bridge=None):
+        name = name or self.name
+        return PyroAdapter(name, self, bridge)
