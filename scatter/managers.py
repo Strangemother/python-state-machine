@@ -20,6 +20,12 @@ class Manager(list):
             return list.__getitem__(self, key)
         return self._names[key]
 
+    def __getattr__(self, key):
+        '''
+        return a list of objects matching the name provided.
+        '''
+        return self.get(key)
+
     def get(self, name, default=None):
         try:
             return self._names[name]
@@ -107,6 +113,18 @@ class ConditionsManager(Manager):
     def get_item_name(self, item):
         str_n = str(item)
         return str_n
+
+
+class BridgeManager(Manager):
+
+    def add(self, *args):
+        return self.append(*args)
+
+    def get_item_name(self, item):
+        '''
+        return a name freom the machine
+        '''
+        return item.name
 
 
 class Events(object):
