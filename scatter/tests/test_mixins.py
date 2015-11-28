@@ -1,7 +1,7 @@
 import unittest
 from mock import create_autospec
 from mock import MagicMock
-from scatter.mixins import NameMixin, GetSetMixin, EventMixin, ConditionsMixin, NodeMixin
+from scatter.mixins import NameMixin, GetSetMixin, EventMixin, ConditionsMixin
 from axel import Event
 
 
