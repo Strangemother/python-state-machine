@@ -1,6 +1,6 @@
 '''
 This example shows how to implement a node to a machine.
-The TestNode contains a value "color".
+The ColorNode contains a value "color".
 
 The condition will react when 'color' is changed on the node.
 
@@ -10,7 +10,7 @@ The condition will react when 'color' is changed on the node.
 from scatter import Machine, Node, Condition
 
 
-class TestNode(Node):
+class ColorNode(Node):
     color = 'red'
 
     _conditions = (
@@ -23,7 +23,7 @@ class TestNode(Node):
 
 def run():
     ma = Machine('example')
-    n = TestNode()
+    n = ColorNode()
     ma.nodes.add(n)
     n.color = 'blue'
     return ma

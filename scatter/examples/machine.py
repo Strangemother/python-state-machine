@@ -14,7 +14,13 @@ import os
 import pickle
 
 
-class ReactNode():pass
+class ReactNode(Node):
+    _conditions = (
+            Condition('koo', Condition.CHANGED, 'foo_changed'),
+        )
+
+    def foo_changed(self, node, key, current, incoming, *args):
+        print 'ReactNode', key
 
 names = (
     ('AL', 'Alabama'),
@@ -69,6 +75,7 @@ names = (
     ('WY', 'Wyoming'),
 )
 
+
 def mem_pickle(o=None):
     '''
     Receive an object. to store to.
@@ -81,6 +88,7 @@ def mem_pickle(o=None):
         return {}
     else:
         pickle.dump(o, open(fp, 'wb'))
+
 
 def get_next_name(list):
     '''
@@ -107,7 +115,9 @@ def run():
     print 'Creating machine', nm
     m = Machine(nm)
     n = Node('woo')
+    n2 = ReactNode('Dibble')
     m.nodes.add(n)
+    m.nodes.add(n2)
     print 'wait() functon setup'
     print 'connect() functon setup'
 

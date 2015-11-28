@@ -11,11 +11,11 @@ Conditions can be coded to be agnostic or explicit
     # Node "Cake" heard "color" on Node "Dave" from red to green
     # Node "Dave" heard "color" on Node "Dave" from red to green
 
-We use TestNode twice, each having a conditions reference to the global 'cond'
+We use MyNode twice, each having a conditions reference to the global 'cond'
 As the condition has a string reference callback, it checks if the node has
 the method.
 
-To test this, change a 'TestNode' to a 'Node'. the callback will fire once per
+To test this, change a 'MyNode' to a 'Node'. the callback will fire once per
 'color' change - on any node.
 '''
 from scatter import Machine, Node, Condition
@@ -24,7 +24,7 @@ from scatter import Machine, Node, Condition
 cond = Condition('color', Condition.CHANGED, 'color_changed')
 
 
-class TestNode(Node):
+class MyNode(Node):
     color = 'red'
 
     _conditions = (
@@ -42,8 +42,8 @@ class TestNode(Node):
 
 def run():
     ma = Machine('example')
-    n = TestNode('Cake')
-    n2 = TestNode('Dave')
+    n = MyNode('Cake')
+    n2 = MyNode('Dave')
     ma.nodes.add(n, n2)
     n.color = 'blue'
     return ma
