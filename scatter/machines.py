@@ -1,19 +1,37 @@
 from axel import Event
-from managers import NodeManager
+from managers import NodeManager, BridgeManager
 from mixins import ManagerMixin
-from adapters import PyroAdapter
+from bridge import BridgeMixin
+from adapters import PyroAdapter, AdapterMixin
 
 
-class Machine(ManagerMixin):
+class MachineBase(object):
+
+    def send(self, event, *args, **kw):
+        '''
+        Send the value through the adapter
+        '''
+        self.adapter.send(event, *args, **kw)
+
+    def __str__(self):
+        ''' Returns a string version of the machine '''
+        return '{0}({1})'.format(self.__class__.__name__, self.name)
+
+    def __repr__(self):
+        return '<machine.Machine:{0}>'.format(self.__str__())
+
+
+class Machine(MachineBase, ManagerMixin, BridgeMixin, AdapterMixin):
     ''' The machine connects the nodes and manages the addition
     and removal of nodes to the network. '''
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, bridge=None):
         '''sets the name and calls the setup() method'''
         if name is not None:
             self.name = name
         self.setup()
-        self.adapter = PyroAdapter(self.name, self)
+        self.bridge = self.make_bridge()
+        self.adapter = self.make_adapter(self.name, self.bridge)
 
     def wait(self):
         self.adapter.wait()
@@ -23,6 +41,7 @@ class Machine(ManagerMixin):
         Add event tool and store the time of call as unix'''
         # ManagerMixin
         self.nodes = self.make_manager(NodeManager, self._node_event)
+        self.peers = self.make_bridge_manager(BridgeManager)
         self._event = Event(self)
 
     def _node_event(self, node, *args, **kw):
@@ -52,7 +71,12 @@ class Machine(ManagerMixin):
 
         self.send('node_event', event, key, current, incoming, **kw)
 
-    def node_set_event(self, key, current, incoming, node=None):
+        for bridge in self.peers:
+            print 'bridge', bridge
+            print event, key, current, incoming
+            bridge.call('node_event', event, key, current, incoming, **kw)
+
+    def node_set_event(self, key, current, incoming, node=None, machine=None):
         ''' this method called by self.node_event iterates the set event to the
         attached nodes.
         key is the attr on the node in the event context
@@ -63,17 +87,4 @@ class Machine(ManagerMixin):
 
         for n in self.nodes:
             if n is not node:# and node.get_name() == _node.get_name():
-                n._run_conditions(key, current, incoming, node=node)
-
-    def send(self, event, *args, **kw):
-        '''
-        Send the value through the adapter
-        '''
-        self.adapter.send(event, *args, **kw)
-
-    def __str__(self):
-        ''' Returns a string version of the machine '''
-        return '{0}({1})'.format(self.__class__.__name__, self.name)
-
-    def __repr__(self):
-        return '<machine.Machine:{0}>'.format(self.__str__())
+                n._run_conditions(key, current, incoming, node=node, machine=machine)
