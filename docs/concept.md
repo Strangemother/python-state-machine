@@ -9,7 +9,7 @@ Actions will be performed from events through the node cloud.
 The node cloud will imply further event dispatches.
 
 
-The entire procedure is non blocking, event clear and scalable. With a reactive state machine performing computatuions based upon calculated events, can allow waterfall logic through many nodes,creating a network of reactions.
+The entire procedure is non blocking, event clear and scalable. With a reactive state machine performing computatutions based upon calculated events, can allow waterfall logic through many nodes, creating a network of reactions.
 
 ## Scenario
 
