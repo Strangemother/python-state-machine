@@ -276,5 +276,6 @@ class TestPyroAdapter(unittest.TestCase):
         # self.assertEqual(expected, pyro_adapter.wait(bridge))
         assert False # TODO: implement your test here
 
+
 if __name__ == '__main__':
     unittest.main()

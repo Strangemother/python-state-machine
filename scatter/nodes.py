@@ -26,6 +26,7 @@ class Node(NameMixin, ConditionsMixin, GetSetMixin, EventMixin):
         the self._event_handlers is instantiated for Machine callback.
         This should be taken off the __init__ eventually.
         '''
+
         self._build_event()
         self._name = name
 

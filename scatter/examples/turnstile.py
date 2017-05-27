@@ -16,20 +16,20 @@ class Turnstile(Node):
             Condition('input_coins', Condition.CHANGED, 'input_coins_changed'),
         )
 
-    def state_changed(self, node, key, nv, ov, *args):
+    def state_changed(self, node, key, nv, ov, *args, **kw):
         if nv == LOCKED:
             print 'Locked. Insert coin.'
         elif nv == UNLOCKED:
             print 'Allow push'
 
-    def input_coins_changed(self, node, key, nv, ov, *args):
+    def input_coins_changed(self, node, key, nv, ov, *args, **kw):
         print 'Total:', nv
         if nv >= 50:
             self.state = UNLOCKED
         else:
             self.state = LOCKED
 
-    def turns_positive(self, *args):
+    def turns_positive(self, *args, **kw):
         print 'Turned, swallow money'
         self.input_coins -= self.cost
 
@@ -48,6 +48,16 @@ class Turnstile(Node):
 
 def run():
     n = Turnstile()
+    print '... Next Person'
+    n.push()
+    print '... Money'
+    n.coin(20)
+    n.coin(20)
+    print '... Test'
+    n.push()
+    n.coin(20)
+    n.push()
+    print '... Next Person'
     n.push()
     return n
 

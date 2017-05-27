@@ -58,7 +58,7 @@ class Machine(MachineBase, ManagerMixin, BridgeMixin, AdapterMixin):
         if event == 'set':
             # A name args tuple will have (event, key, value)
             key = args[0]
-            print 'args', machine, node, args, kw
+            # print 'args', machine, node, args, kw
             current = node.get(key)
             incoming = args[1]
             # Reacting to a set is the only hardwired functionality.
