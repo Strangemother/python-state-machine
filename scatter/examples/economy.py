@@ -6,9 +6,6 @@ class PersonNode(Node):
 
     _conditions = (
         Condition('color', Condition.CHANGED, 'color_changed', node='person'),
-        Condition('color', Condition.CHANGED, 'color_changed', node='person'),
-        step_cond,
-        # Condition('step_val', Condition.CHANGED, 'calendar_step_val_changed', node='calendar'),
     )
 
     def color_changed(self, node, key, new_val, old_val, condition, valids, **kw):
@@ -23,18 +20,39 @@ class PersonNode(Node):
 
 
 class Person(PersonNode):
+
+    _conditions = (
+        Condition('minutes', Condition.CHANGED, 'calendar_weeks_changed', node='calendar'),
+        step_cond,
+    )
+
     age = 20
     step_val = 0
 
-    def step_changed(self, node, key, new_val, old_val, condition, valids, **kw):
-        self.step_life(new_val)
-
-    def step_life(self, val):
+    def calendar_weeks_changed(self, node, key, new_val, old_val, condition, valids, **kw):
         if self.index == 40:
-            print 'person(40) step life', self.age + self.step_val
+            print 'minute', new_val
+
+    def step_changed(self, node, key, new_val, old_val, condition, valids, **kw):
+        self.step_life(node, new_val)
+
+    def step_life(self,node, val):
+        self.step_val = val
+        if self.index == 40:
+            age = node.years + self.age
+            if age != self.age:
+                print  self.index, 'person(40) Birthday', self.age
+
 
 class CalendarNode(Node):
-    step_val = 0
+
+    # seconds
+    step_val = 10
+
+    years = 0
+    months = 0
+    minutes = 0
+    seconds = 0
 
     _conditions = (
         step_cond,
@@ -45,8 +63,24 @@ class CalendarNode(Node):
         step_val was changed by the machine.
         '''
 
-        self.step_val += 1
-        print '{} heard {} {}'.format(self, condition, self.step_val)
+        secs = self.step_val + 1
+        mins = secs / 60
+        hours = mins / 60
+        days = hours / 60
+        weeks = days / 7
+        months = weeks / 7
+        years = months / 12
+
+        print 'secs {}, mins {}, hours {}, days {}, weeks {}, months {}'.format(secs, mins, hours, days, weeks, months)
+
+        self.seconds = secs
+        self.minutes = mins
+        self.hours = hours
+        self.days = days
+        self.weeks = weeks
+        self.months = months
+        self.years = years
+
 
 
 import time
@@ -60,7 +94,7 @@ class EconomyMachine(Machine):
     def start(self):
         self._step = 0
         while 1:
-            time.sleep(1)
+            # time.sleep(1)
             self.step()
 
     def step(self):
@@ -87,9 +121,8 @@ def run():
 def generate_people(machine, count=100):
     print 'generating {} people'.format(count)
     for index in range(count):
-        name = "p{}".format(index)
         person = Person(name='person')
-        person.index = name
+        person.index = index
         person.step_val = machine._step
         machine.nodes.add(person)
     machine.nodes.add(CalendarNode(name='calendar'))
